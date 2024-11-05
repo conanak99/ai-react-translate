@@ -15,4 +15,5 @@ export default defineConfig({
   adapter: node({
     mode: "standalone",
   }),
+  server: { port: Number(process.env.PORT) || 4321 },
 });
