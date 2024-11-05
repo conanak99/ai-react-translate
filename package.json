@@ -10,8 +10,30 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^4.16.7",
+    "@ai-sdk/anthropic": "^0.0.53",
+    "@ai-sdk/google": "^0.0.55",
+    "@ai-sdk/openai": "^0.0.70",
     "@astrojs/check": "^0.9.4",
-    "typescript": "^5.6.3"
+    "@astrojs/node": "^8.3.4",
+    "@astrojs/react": "^3.6.2",
+    "@astrojs/tailwind": "^5.1.2",
+    "@astrojs/ts-plugin": "^1.10.4",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "ai": "^3.4.22",
+    "astro": "^4.16.7",
+    "prism-react-renderer": "^2.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1",
+    "react-syntax-highlighter": "^15.6.1",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@tailwindcss/typography": "^0.5.15",
+    "@types/react-syntax-highlighter": "^15.5.13"
   }
 }
