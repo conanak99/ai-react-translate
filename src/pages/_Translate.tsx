@@ -15,6 +15,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
   const {
     completion,
     stop,
+    error,
     complete,
     input,
     setInput,
@@ -131,6 +132,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
         <div
           className={`flex-1 overflow-y-auto p-4 space-y-4 ${fontSizeClasses[fontSize]} text-gray-900 dark:text-gray-100`}
         >
+          {error && <div className="text-red-500">{error.message}</div>}
           <div className="w-full break-words whitespace-pre-line rounded-lg">
             {completion}
           </div>

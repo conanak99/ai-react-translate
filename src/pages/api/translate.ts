@@ -67,6 +67,7 @@ export const POST: APIRoute = async ({ request }) => {
   const html = await response.text();
   console.log("Content fetched successfully");
 
+  console.time("streamText");
   const result = await streamText({
     // model: openai("gpt-4o-mini"),
     // model: anthropic("claude-3-5-sonnet-20241022"),
@@ -96,6 +97,7 @@ ${html}
       },
     ],
   });
+  console.timeEnd("streamText");
 
   return result.toDataStreamResponse();
 };
