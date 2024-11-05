@@ -21,7 +21,12 @@ const Translate: React.FC = () => {
     isLoading,
   } = useCompletion({
     api: "/api/translate",
+    initialInput: localStorage.getItem("translationUrl") || "",
   });
+
+  useEffect(() => {
+    localStorage.setItem("translationUrl", input);
+  }, [input]);
 
   function goToChapter(change: number) {
     // Example input `https://truyenyy.vip/truyen/thinh-cong-tu-tram-yeu/chuong-309.html`
