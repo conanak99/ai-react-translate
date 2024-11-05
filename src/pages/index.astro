@@ -1,5 +1,6 @@
 ---
 import Chat from "./_Chat";
+import Translate from "./_Translate";
 ---
 
 <html lang="en">
@@ -11,6 +12,29 @@ import Chat from "./_Chat";
     <title>Astro</title>
   </head>
   <body>
-    <Chat client:load />
+    <!-- <Chat client:load /> -->
+    <Translate client:only="react" />
+    <button
+      id="scrollToTop"
+      class="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 hover:scale-110 hover:shadow-xl transition-all duration-300 opacity-0 invisible"
+      onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+    >
+    ⬆
+    </button>
+    <script>
+      const scrollBtn = document.getElementById('scrollToTop');
+
+      if (scrollBtn) {
+        window.addEventListener("scroll", () => {
+          if (window.scrollY > 200) {
+          scrollBtn.classList.remove('opacity-0', 'invisible');
+          scrollBtn.classList.add('opacity-100');
+        } else {
+          scrollBtn.classList.add("opacity-0", "invisible");
+          scrollBtn.classList.remove("opacity-100");
+        }
+      });
+      }
+    </script>
   </body>
 </html>

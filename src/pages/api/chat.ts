@@ -39,7 +39,10 @@ export const POST: APIRoute = async ({ request }) => {
         },
       ],
     }),
-    messages: convertToCoreMessages(messages),
+    messages: [
+      // { role: "system", content: "You are a helpful assistant." },
+      ...convertToCoreMessages(messages),
+    ],
   });
 
   return result.toDataStreamResponse();
