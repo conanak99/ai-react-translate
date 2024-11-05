@@ -4,13 +4,13 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText } from "ai";
 import type { APIRoute } from "astro";
 
-const openai = createOpenAI({
-  apiKey: import.meta.env.OPEN_AI_KEY,
-});
+// const openai = createOpenAI({
+//   apiKey: import.meta.env.OPEN_AI_KEY,
+// });
 
-const anthropic = createAnthropic({
-  apiKey: import.meta.env.CLAUDE_AI_KEY,
-});
+// const anthropic = createAnthropic({
+//   apiKey: import.meta.env.CLAUDE_AI_KEY,
+// });
 
 const google = createGoogleGenerativeAI({
   apiKey: import.meta.env.GOOGLE_GENERATIVE_AI_KEY,
