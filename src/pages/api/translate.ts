@@ -70,6 +70,7 @@ export const POST: APIRoute = async ({ request }) => {
   const result = await streamText({
     // model: openai("gpt-4o-mini"),
     // model: anthropic("claude-3-5-sonnet-20241022"),
+    maxTokens: 12_000,
     model: google("gemini-1.5-pro-002", {
       safetySettings: [
         { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
