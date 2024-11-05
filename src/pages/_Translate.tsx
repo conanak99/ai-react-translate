@@ -1,18 +1,20 @@
 import { useCompletion } from "ai/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useLocalStorage } from "usehooks-ts";
+import { setTranslateUrl } from "../pocket";
 
-const Translate: React.FC = () => {
-  const [fontSize, setFontSize] = useState(() => {
-    const saved = localStorage.getItem("translationFontSize");
-    return saved ? Number.parseInt(saved) : 3; // Default to text-lg (4)
-  });
+const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
+  const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
+  const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
 
   useEffect(() => {
-    localStorage.setItem("translationFontSize", fontSize.toString());
-  }, [fontSize]);
+    // Update dark mode class on html element
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
 
   const {
     completion,
+    stop,
     complete,
     input,
     setInput,
@@ -21,14 +23,17 @@ const Translate: React.FC = () => {
     isLoading,
   } = useCompletion({
     api: "/api/translate",
-    initialInput: localStorage.getItem("translationUrl") || "",
+    initialInput: initialUrl,
   });
 
   useEffect(() => {
-    localStorage.setItem("translationUrl", input);
+    if (input) {
+      setTranslateUrl(input);
+    }
   }, [input]);
 
-  function goToChapter(change: number) {
+  async function goToChapter(change: number) {
+    stop();
     // Example input `https://truyenyy.vip/truyen/thinh-cong-tu-tram-yeu/chuong-309.html`
 
     // Get chapter number from url using regex
@@ -64,9 +69,13 @@ const Translate: React.FC = () => {
     setFontSize((prev) => Math.max(prev - 1, 0));
   };
 
+  const toggleTheme = () => {
+    setIsDarkMode((prev) => !prev);
+  };
+
   return (
-    <div className="w-full lg:max-w-6xl mx-auto p-4 min-h-screen">
-      <div className="bg-white rounded-lg shadow flex flex-col h-full">
+    <div className="w-full lg:max-w-6xl mx-auto p-4 min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow flex flex-col h-full">
         <form onSubmit={handleSubmit} className="p-4">
           <div className="flex gap-2">
             <input
@@ -74,14 +83,24 @@ const Translate: React.FC = () => {
               value={input}
               onChange={handleInputChange}
               placeholder="Enter URL For Translation"
-              className="flex-1 rounded-lg border p-2 focus:outline-none focus:border-blue-500"
+              className="flex-1 rounded-lg border p-2 focus:outline-none focus:border-blue-500 bg-white dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"
             />
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-            >
-              Send
-            </button>
+            {isLoading ? (
+              <button
+                type="button"
+                className="bg-gray-200 dark:bg-gray-700 dark:text-white px-4 py-2 rounded-lg hover:bg-opacity-80"
+                onClick={stop}
+              >
+                Stop
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+              >
+                Send
+              </button>
+            )}
           </div>
         </form>
 
@@ -89,21 +108,28 @@ const Translate: React.FC = () => {
           <button
             onClick={decreaseFontSize}
             type="button"
-            className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
+            className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
           >
             A-
           </button>
           <button
             onClick={increaseFontSize}
             type="button"
-            className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
+            className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
           >
             A+
+          </button>
+          <button
+            onClick={toggleTheme}
+            type="button"
+            className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
+          >
+            {isDarkMode ? "☀️" : "🌙"}
           </button>
         </div>
 
         <div
-          className={`flex-1 overflow-y-auto p-4 space-y-4 ${fontSizeClasses[fontSize]}`}
+          className={`flex-1 overflow-y-auto p-4 space-y-4 ${fontSizeClasses[fontSize]} text-gray-900 dark:text-gray-100`}
         >
           <div className="w-full break-words whitespace-pre-line rounded-lg">
             {completion}
@@ -136,7 +162,7 @@ const Translate: React.FC = () => {
           )}
         </div>
 
-        <div className="flex justify-between p-4 border-t">
+        <div className="flex justify-between p-4 border-t dark:border-gray-700">
           <button
             type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"

@@ -1,6 +1,9 @@
 ---
+import { getTranslateUrl } from "../pocket";
 import Chat from "./_Chat";
 import Translate from "./_Translate";
+
+const initialUrl = await getTranslateUrl();
 ---
 
 <html lang="en">
@@ -11,30 +14,31 @@ import Translate from "./_Translate";
     <meta name="generator" content={Astro.generator} />
     <title>AI Convert Translator</title>
   </head>
-  <body>
+  <body class="dark:bg-gray-900">
     <!-- <Chat client:load /> -->
-    <Translate client:only="react" />
+    <Translate initialUrl={initialUrl} client:load />
     <button
       id="scrollToTop"
       class="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 hover:scale-110 hover:shadow-xl transition-all duration-300 opacity-0 invisible"
       onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
     >
-    ⬆
+      ⬆
     </button>
-    <script>
-      const scrollBtn = document.getElementById('scrollToTop');
+  </body>
 
-      if (scrollBtn) {
-        window.addEventListener("scroll", () => {
-          if (window.scrollY > 200) {
-          scrollBtn.classList.remove('opacity-0', 'invisible');
-          scrollBtn.classList.add('opacity-100');
+  <script>
+    const scrollBtn = document.getElementById("scrollToTop");
+
+    if (scrollBtn) {
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 200) {
+          scrollBtn.classList.remove("opacity-0", "invisible");
+          scrollBtn.classList.add("opacity-100");
         } else {
           scrollBtn.classList.add("opacity-0", "invisible");
           scrollBtn.classList.remove("opacity-100");
         }
       });
-      }
-    </script>
-  </body>
+    }
+  </script>
 </html>
