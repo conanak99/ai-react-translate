@@ -52,8 +52,8 @@ const Translate: React.FC = () => {
     "text-base leading-6", // 1
     "text-lg leading-7", // 2
     "text-xl leading-8", // 3
-    "text-2xl leading-8", // 4
-    "text-3xl leading-8", // 5
+    "text-2xl leading-9", // 4
+    "text-3xl leading-10", // 5
   ];
 
   const increaseFontSize = () => {
