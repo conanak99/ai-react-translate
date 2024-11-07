@@ -75,7 +75,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
     setIsDarkMode((prev) => !prev);
   };
 
-  const isMobile = screen.width < 768;
+  const isMobile = screen?.width < 768; // Lol screen is undefined on server-side
 
   return (
     <div className="w-full lg:max-w-6xl mx-auto p-4 min-h-screen bg-gray-100 dark:bg-gray-900">
