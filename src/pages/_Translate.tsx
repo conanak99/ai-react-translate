@@ -36,8 +36,8 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 
   async function goToChapter(change: number) {
     stop();
-    // Example input `https://truyenyy.vip/truyen/thinh-cong-tu-tram-yeu/chuong-309.html`
 
+    // Example input `https://truyenyy.vip/truyen/thinh-cong-tu-tram-yeu/chuong-309.html`
     // Get chapter number from url using regex
     const chapterNumber = input.match(/\d+/)?.[0];
 
@@ -75,15 +75,13 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
     setIsDarkMode((prev) => !prev);
   };
 
-  const isMobile = screen?.width < 768; // Lol screen is undefined on server-side
-
   return (
     <div className="w-full lg:max-w-6xl mx-auto p-4 min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow flex flex-col h-full">
         <form onSubmit={handleSubmit} className="p-4">
           <div className="flex gap-2">
             <textarea
-              rows={isMobile ? 3 : 1}
+              rows={3}
               value={input}
               onChange={handleInputChange}
               placeholder="Enter URL For Translation"
@@ -93,7 +91,10 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
               <button
                 type="button"
                 className="bg-gray-200 dark:bg-gray-700 dark:text-white px-4 py-2 rounded-lg hover:bg-opacity-80"
-                onClick={stop}
+                onClick={(e) => {
+                  e.preventDefault();
+                  stop();
+                }}
               >
                 Stop
               </button>
