@@ -65,15 +65,71 @@ const RESULT_CACHE: Map<
   { status: "pending" | "success"; result?: Result }
 > = new Map();
 
-export const POST: APIRoute = async ({ request }) => {
-  // useCompletion hardcode the prompt object lol
-  const { prompt, ignoreCache }: { prompt: string; ignoreCache: boolean } =
-    await request.json();
-  const url = prompt;
+function getNextChapterUrl(inputURL: string) {
+  // Example input `https://truyenyy.vip/truyen/thinh-cong-tu-tram-yeu/chuong-309.html`
+  // Get chapter number from url using regex
+  const chapterNumber = inputURL.match(/\d+/)?.[0];
 
-  console.log("ignoreCache", ignoreCache);
+  // Change chapter number by change value
+  const newChapterNumber = Number(chapterNumber) + 1;
+
+  // Replace chapter number in url
+  const newUrl = inputURL.replace(
+    String(chapterNumber),
+    newChapterNumber.toString()
+  );
+  return newUrl;
+}
+
+async function getStreamResult(url: string): Promise<Result> {
+  console.log(`Fetching content from: https://r.jina.ai/${url}`);
+  const response = await fetch(`https://r.jina.ai/${url}`);
+  const html = await response.text();
+  console.log("Content fetched successfully");
+
+  console.time("streamText");
+  const result = await streamText({
+    // model: openai("gpt-4o-mini"),
+    // model: anthropic("claude-3-5-sonnet-20241022"),
+    maxTokens: 12_000,
+    model: google("gemini-1.5-pro-002", {
+      safetySettings: [
+        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_NONE",
+        },
+        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_NONE",
+        },
+      ],
+    }),
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      {
+        role: "user",
+        content: `Here are the draft paragraphs you will be working with:
+<draft>
+${html}
+</draft>`,
+      },
+    ],
+  });
+  console.timeEnd("streamText");
+
+  return result;
+}
+
+async function getStreamFromCache(
+  url: string,
+  ignoreCache: boolean
+): Promise<Result> {
+  console.log({ url, ignoreCache });
 
   let result: Result | undefined;
+
   if (!ignoreCache && RESULT_CACHE.has(url)) {
     const cache = RESULT_CACHE.get(url);
     if (cache?.status === "success") {
@@ -102,45 +158,29 @@ export const POST: APIRoute = async ({ request }) => {
     }
   } else {
     RESULT_CACHE.set(url, { status: "pending" });
-
-    console.log(`Fetching content from: https://r.jina.ai/${url}`);
-    const response = await fetch(`https://r.jina.ai/${url}`);
-    const html = await response.text();
-    console.log("Content fetched successfully");
-
-    console.time("streamText");
-    result = await streamText({
-      // model: openai("gpt-4o-mini"),
-      // model: anthropic("claude-3-5-sonnet-20241022"),
-      maxTokens: 12_000,
-      model: google("gemini-1.5-pro-002", {
-        safetySettings: [
-          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-          {
-            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-            threshold: "BLOCK_NONE",
-          },
-          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-          {
-            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_NONE",
-          },
-        ],
-      }),
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        {
-          role: "user",
-          content: `Here are the draft paragraphs you will be working with:
-<draft>
-${html}
-</draft>`,
-        },
-      ],
-    });
-    console.timeEnd("streamText");
-
+    result = await getStreamResult(url);
     RESULT_CACHE.set(url, { status: "success", result });
+  }
+
+  if (!result) {
+    throw new Error("No result");
+  }
+
+  return result;
+}
+
+export const POST: APIRoute = async ({ request }) => {
+  // useCompletion hardcode the prompt object lol
+  const { prompt, ignoreCache }: { prompt: string; ignoreCache: boolean } =
+    await request.json();
+  const url = prompt;
+
+  const result = await getStreamFromCache(url, ignoreCache);
+
+  if (!ignoreCache) {
+    // Just call it to prefetch next chapter
+    const nextChapterUrl = getNextChapterUrl(url);
+    getStreamFromCache(nextChapterUrl, ignoreCache);
   }
 
   return result?.toDataStreamResponse() ?? new Response(null, { status: 501 });

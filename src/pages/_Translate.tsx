@@ -56,6 +56,9 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 
     setInput(newUrl);
     complete(newUrl);
+
+    // Scroll to top of the page
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   const fontSizeClasses = [
