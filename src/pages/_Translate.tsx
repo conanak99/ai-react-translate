@@ -1,9 +1,10 @@
 import { useCompletion } from "ai/react";
 import { useEffect } from "react";
-import { useLocalStorage } from "usehooks-ts";
+import { useLocalStorage, useScreen } from "usehooks-ts";
 import { setTranslateUrl } from "../pocket";
 
 const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
+  const screen = useScreen();
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
   const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
 
@@ -74,13 +75,15 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
     setIsDarkMode((prev) => !prev);
   };
 
+  const isMobile = screen?.width < 768; // Lol screen is undefined on server-side
+
   return (
     <div className="w-full lg:max-w-6xl mx-auto p-4 min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow flex flex-col h-full">
         <form onSubmit={handleSubmit} className="p-4">
           <div className="flex gap-2">
-            <input
-              type="text"
+            <textarea
+              rows={isMobile ? 3 : 1}
               value={input}
               onChange={handleInputChange}
               placeholder="Enter URL For Translation"
