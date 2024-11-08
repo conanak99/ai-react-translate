@@ -67,11 +67,14 @@ const RESULT_CACHE: Map<
 
 export const POST: APIRoute = async ({ request }) => {
   // useCompletion hardcode the prompt object lol
-  const { prompt }: { prompt: string } = await request.json();
+  const { prompt, ignoreCache }: { prompt: string; ignoreCache: boolean } =
+    await request.json();
   const url = prompt;
 
+  console.log("ignoreCache", ignoreCache);
+
   let result: Result | undefined;
-  if (RESULT_CACHE.has(url)) {
+  if (!ignoreCache && RESULT_CACHE.has(url)) {
     const cache = RESULT_CACHE.get(url);
     if (cache?.status === "success") {
       result = cache.result;
@@ -89,10 +92,13 @@ export const POST: APIRoute = async ({ request }) => {
           break;
         }
 
-        // Wait 2 seconds before checking again
-        await delay(2_000);
+        // Wait before checking again
+        await delay(3_000);
       }
-      throw new Error("Timeout");
+
+      if (!result) {
+        throw new Error("Timeout");
+      }
     }
   } else {
     RESULT_CACHE.set(url, { status: "pending" });

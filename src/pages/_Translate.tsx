@@ -1,5 +1,5 @@
 import { useCompletion } from "ai/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocalStorage, useScreen } from "usehooks-ts";
 import { setTranslateUrl } from "../pocket";
 
@@ -7,6 +7,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
   const screen = useScreen();
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
   const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
+  const [ignoreCache, setIgnoreCache] = useState(false);
 
   useEffect(() => {
     // Update dark mode class on html element
@@ -26,6 +27,9 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
   } = useCompletion({
     api: "/api/translate",
     initialInput: initialUrl,
+    body: {
+      ignoreCache,
+    },
   });
 
   useEffect(() => {
@@ -109,7 +113,22 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
           </div>
         </form>
 
-        <div className="flex justify-end gap-2 px-4">
+        <div className="flex justify-end gap-2 px-4 items-center">
+          <div className="flex items-center gap-2 mr-auto">
+            <input
+              type="checkbox"
+              id="ignoreCache"
+              checked={ignoreCache}
+              onChange={(e) => setIgnoreCache(e.target.checked)}
+              className="rounded border-gray-300 dark:border-gray-600 scale-125"
+            />
+            <label
+              htmlFor="ignoreCache"
+              className="text-gray-700 dark:text-gray-300 text-lg"
+            >
+              Ignore Cache
+            </label>
+          </div>
           <button
             onClick={decreaseFontSize}
             type="button"
