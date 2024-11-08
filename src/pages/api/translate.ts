@@ -82,7 +82,7 @@ export const POST: APIRoute = async ({ request }) => {
 
       while (Date.now() - startTime < twoMinutes) {
         // Check if cache was updated
-        console.log("Checking cache...");
+        console.log("Checking cache...", Date.now() - startTime);
         const currentCache = RESULT_CACHE.get(url);
         if (currentCache?.status === "success") {
           result = currentCache.result;
@@ -92,6 +92,7 @@ export const POST: APIRoute = async ({ request }) => {
         // Wait 2 seconds before checking again
         await delay(2_000);
       }
+      throw new Error("Timeout");
     }
   } else {
     RESULT_CACHE.set(url, { status: "pending" });
