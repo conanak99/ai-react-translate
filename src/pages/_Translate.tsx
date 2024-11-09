@@ -1,10 +1,9 @@
 import { useCompletion } from "ai/react";
 import { useEffect, useState } from "react";
-import { useLocalStorage, useScreen } from "usehooks-ts";
+import { useLocalStorage } from "usehooks-ts";
 import { setTranslateUrl } from "../pocket";
 
 const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
-  const screen = useScreen();
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
   const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
   const [ignoreCache, setIgnoreCache] = useState(false);

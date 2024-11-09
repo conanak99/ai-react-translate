@@ -1,5 +1,5 @@
-import { createOpenAI } from "@ai-sdk/openai";
-import { createAnthropic } from "@ai-sdk/anthropic";
+// import { createOpenAI } from "@ai-sdk/openai";
+// import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText, convertToCoreMessages } from "ai";
 import type { APIRoute } from "astro";
