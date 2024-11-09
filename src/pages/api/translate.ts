@@ -91,7 +91,7 @@ async function getStreamResult(url: string): Promise<Result> {
   const result = await streamText({
     // model: openai("gpt-4o-mini"),
     // model: anthropic("claude-3-5-sonnet-20241022"),
-    maxTokens: 12_000,
+    maxTokens: 8192,
     model: google("gemini-1.5-pro-002", {
       safetySettings: [
         { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -157,12 +157,18 @@ async function getStreamFromCache(
       }
     }
   } else {
-    RESULT_CACHE.set(url, { status: "pending" });
-    result = await getStreamResult(url);
-    RESULT_CACHE.set(url, { status: "success", result });
+    try {
+      RESULT_CACHE.set(url, { status: "pending" });
+      result = await getStreamResult(url);
+      RESULT_CACHE.set(url, { status: "success", result });
+    } catch (error) {
+      RESULT_CACHE.delete(url);
+      throw error;
+    }
   }
 
   if (!result) {
+    RESULT_CACHE.delete(url);
     throw new Error("No result");
   }
 
