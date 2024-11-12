@@ -83,7 +83,12 @@ function getNextChapterUrl(inputURL: string) {
 
 async function getStreamResult(url: string): Promise<Result> {
   console.log(`Fetching content from: https://r.jina.ai/${url}`);
-  const response = await fetch(`https://r.jina.ai/${url}`);
+  const response = await fetch(`https://r.jina.ai/${url}`, {
+    headers: {
+      Authorization: `Bearer ${import.meta.env.JINA_API_KEY}`,
+    },
+  });
+
   const html = await response.text();
   console.log("Content fetched successfully");
 
