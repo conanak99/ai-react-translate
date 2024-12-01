@@ -1,10 +1,14 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 import { streamText } from "ai";
 import type { APIRoute } from "astro";
 
 const anthropic = createAnthropic({
   apiKey: import.meta.env.CLAUDE_AI_KEY,
+});
+const google = createGoogleGenerativeAI({
+  apiKey: import.meta.env.GOOGLE_GENERATIVE_AI_KEY,
 });
 
 const SYSTEM_PROMPT = `You are an expert in interpersonal communication and psychology, tasked with interpreting the underlying meaning of a woman's statement. Your goal is to provide a nuanced interpretation that considers both the literal meaning and potential subtext, taking into account emotional nuances and cultural context.
@@ -76,7 +80,21 @@ export const POST: APIRoute = async ({ request }) => {
   ).replace("{{ADDITIONAL_CONTEXT}}", context);
 
   const result = await streamText({
-    model: anthropic("claude-3-5-sonnet-20241022", { cacheControl: true }),
+    // model: anthropic("claude-3-5-sonnet-20241022", { cacheControl: true }),
+    model: google("gemini-1.5-pro-002", {
+      safetySettings: [
+        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_NONE",
+        },
+        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_NONE",
+        },
+      ],
+    }),
     messages: [
       {
         role: "system",

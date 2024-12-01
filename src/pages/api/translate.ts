@@ -17,9 +17,9 @@ const google = createGoogleGenerativeAI({
   apiKey: import.meta.env.GOOGLE_GENERATIVE_AI_KEY,
 });
 
-const SYSTEM_PROMPT = `You are a highly skilled translator and writer specializing in wuxia novels.
-Your task is to transform draft paragraphs into a polished Vietnamese wuxia novel translation, adhering to the genre's style and conventions.
-Your goal is to create a complete, engaging translation that captures the essence of the original text while incorporating the unique elements of the wuxia genre.
+const SYSTEM_PROMPT = `You are a highly skilled translator and writer specializing in wuxia/xianxia novels.
+Your task is to transform draft paragraphs into a polished Vietnamese wuxia/xianxia novel translation, adhering to the genre's style and conventions.
+Your goal is to create a complete, engaging translation that captures the essence of the original text while incorporating the unique elements of the wuxia/xianxia genre.
 
 Please follow these steps to complete the translation:
 
@@ -33,11 +33,6 @@ Please follow these steps to complete the translation:
    - Cultural references specific to the wuxia genre
    - Dramatic descriptions of action scenes
    - Character titles and honorifics
-
-4. Keep these terminologies intact
-<terms>
-đệ tam cảnh, đệ tứ cảnh, đệ ngũ cảnh... đệ cửu cảnh
-</terms>
 
 4. Enhance the narrative by expanding on descriptions, dialogues, or internal monologues that align with the wuxia style. Maintain the core plot and character development from the original draft.
 
