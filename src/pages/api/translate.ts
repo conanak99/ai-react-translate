@@ -25,8 +25,11 @@ const RESULT_CACHE: Map<
 
 function getNextChapterUrl(inputURL: string) {
 	// Example input `https://truyenyy.vip/truyen/thinh-cong-tu-tram-yeu/chuong-309.html`
+  // https://www.bq01.cc/index/38697/73.html
 	// Get chapter number from url using regex
-	const chapterNumber = inputURL.match(/\d+/)?.[0];
+
+	const matches = [...inputURL.matchAll(/\d+/g)];
+	const chapterNumber = matches[matches.length - 1]?.[0];
 
 	// Change chapter number by change value
 	const newChapterNumber = Number(chapterNumber) + 1;
