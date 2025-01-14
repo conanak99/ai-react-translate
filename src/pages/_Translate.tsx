@@ -113,23 +113,25 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
           </div>
         </form>
 
-        <div className="flex justify-end gap-2 px-4 items-center">
-          <div className="flex items-center gap-2 mr-auto">
-            <input
-              type="checkbox"
-              id="ignoreCache"
-              checked={ignoreCache}
-              onChange={(e) => setIgnoreCache(e.target.checked)}
-              className="rounded border-gray-300 dark:border-gray-600 scale-125"
-            />
-            <label
-              htmlFor="ignoreCache"
-              className="text-gray-700 dark:text-gray-300 text-lg"
-            >
-              Ignore Cache
-            </label>
+        <div className="flex flex-col sm:flex-row justify-end gap-4 sm:gap-2 px-4 items-start sm:items-center">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-2 w-full sm:mr-auto">
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="ignoreCache"
+                checked={ignoreCache}
+                onChange={(e) => setIgnoreCache(e.target.checked)}
+                className="rounded border-gray-300 dark:border-gray-600 scale-125"
+              />
+              <label
+                htmlFor="ignoreCache"
+                className="text-gray-700 dark:text-gray-300 text-lg"
+              >
+                Ignore Cache
+              </label>
+            </div>
 
-            <div className="flex items-center gap-4 ml-4">
+            <div className="flex flex-wrap items-center gap-4 ml-0 md:ml-8">
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -166,27 +168,29 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
               </div>
             </div>
           </div>
-          <button
-            onClick={decreaseFontSize}
-            type="button"
-            className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
-          >
-            A-
-          </button>
-          <button
-            onClick={increaseFontSize}
-            type="button"
-            className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
-          >
-            A+
-          </button>
-          <button
-            onClick={toggleTheme}
-            type="button"
-            className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
-          >
-            {isDarkMode ? "☀️" : "🌙"}
-          </button>
+          <div className="flex gap-2 w-full sm:w-auto justify-end">
+            <button
+              onClick={decreaseFontSize}
+              type="button"
+              className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
+            >
+              A-
+            </button>
+            <button
+              onClick={increaseFontSize}
+              type="button"
+              className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
+            >
+              A+
+            </button>
+            <button
+              onClick={toggleTheme}
+              type="button"
+              className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
+            >
+              {isDarkMode ? "☀️" : "🌙"}
+            </button>
+          </div>
         </div>
 
         <div
