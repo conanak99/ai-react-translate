@@ -4,6 +4,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { setTranslateUrl } from "../pocket";
 
 import type { Mode } from "@/lib/translation/constants";
+import { getNextChapterUrl, getPreviousChapterUrl } from "@/lib/utils";
 
 const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
@@ -41,21 +42,14 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
     }
   }, [input]);
 
-  async function goToChapter(change: number) {
+  async function goToChapter(direction: "next" | "previous") {
     stop();
 
-    // Example input `https://truyenyy.vip/truyen/thinh-cong-tu-tram-yeu/chuong-309.html`
-    // Get chapter number from url using regex
-    const chapterNumber = input.match(/\d+/)?.[0];
-
-    // Change chapter number by change value
-    const newChapterNumber = Number(chapterNumber) + change;
-
     // Replace chapter number in url
-    const newUrl = input.replace(
-      String(chapterNumber),
-      newChapterNumber.toString()
-    );
+    const newUrl =
+      direction === "next"
+        ? getNextChapterUrl(input)
+        : getPreviousChapterUrl(input);
 
     setInput(newUrl);
     complete(newUrl);
@@ -234,14 +228,14 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
           <button
             type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-            onClick={() => goToChapter(-1)}
+            onClick={() => goToChapter("previous")}
           >
             Previous Chapter
           </button>
           <button
             type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-            onClick={() => goToChapter(1)}
+            onClick={() => goToChapter("next")}
           >
             Next Chapter
           </button>

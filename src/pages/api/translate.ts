@@ -3,6 +3,7 @@ import { streamText } from "ai";
 import type { APIRoute } from "astro";
 import delay from "delay";
 import { type Mode, PROMPT_MAP } from "../../lib/translation/constants";
+import { getNextChapterUrl } from "@/lib/utils";
 
 // const openai = createOpenAI({
 //   apiKey: import.meta.env.OPEN_AI_KEY,
@@ -22,25 +23,6 @@ const RESULT_CACHE: Map<
 	string,
 	{ status: "pending" | "success"; result?: Result }
 > = new Map();
-
-function getNextChapterUrl(inputURL: string) {
-	// Example input `https://truyenyy.vip/truyen/thinh-cong-tu-tram-yeu/chuong-309.html`
-  // https://www.bq01.cc/index/38697/73.html
-	// Get chapter number from url using regex
-
-	const matches = [...inputURL.matchAll(/\d+/g)];
-	const chapterNumber = matches[matches.length - 1]?.[0];
-
-	// Change chapter number by change value
-	const newChapterNumber = Number(chapterNumber) + 1;
-
-	// Replace chapter number in url
-	const newUrl = inputURL.replace(
-		String(chapterNumber),
-		newChapterNumber.toString(),
-	);
-	return newUrl;
-}
 
 async function getStreamResult(url: string, mode: Mode): Promise<Result> {
 	console.log(`Fetching content from: https://r.jina.ai/${url}`);
