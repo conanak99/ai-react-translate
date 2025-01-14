@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { setTranslateUrl } from "../pocket";
 
+import type { Mode } from "@/lib/translation/constants";
+
 const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
   const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
+  const [mode, setMode] = useLocalStorage<Mode>("mode", "wuxia");
   const [ignoreCache, setIgnoreCache] = useState(false);
 
   useEffect(() => {
@@ -28,6 +31,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
     initialInput: initialUrl,
     body: {
       ignoreCache,
+      mode,
     },
   });
 
@@ -130,6 +134,43 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
             >
               Ignore Cache
             </label>
+
+            <div className="flex items-center gap-4 ml-4">
+              <div className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  id="wuxia"
+                  name="mode"
+                  value="wuxia"
+                  checked={mode === "wuxia"}
+                  onChange={(e) => setMode(e.target.value as Mode)}
+                  className="scale-125"
+                />
+                <label
+                  htmlFor="wuxia"
+                  className="text-gray-700 dark:text-gray-300"
+                >
+                  Wuxia
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  id="fantasy"
+                  name="mode"
+                  value="fantasy_translate"
+                  checked={mode === "fantasy_translate"}
+                  onChange={(e) => setMode(e.target.value as Mode)}
+                  className="scale-125"
+                />
+                <label
+                  htmlFor="fantasy"
+                  className="text-gray-700 dark:text-gray-300"
+                >
+                  Fantasy
+                </label>
+              </div>
+            </div>
           </div>
           <button
             onClick={decreaseFontSize}
