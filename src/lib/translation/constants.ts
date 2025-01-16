@@ -1,6 +1,6 @@
 import names from "./names.json";
 
-export type Mode = 'wuxia' | 'fantasy_translate';
+export type Mode = "wuxia" | "fantasy_translate";
 
 export const SYSTEM_PROMPT_WUXIA = `You are a highly skilled translator and writer specializing in wuxia/xianxia novels.
 Your task is to transform draft paragraphs into a polished Vietnamese wuxia/xianxia novel translation, adhering to the genre's style and conventions.
@@ -26,8 +26,7 @@ Example output structure:
 [Your complete Vietnamese translation of the novel, from beginning to end]
 </translation>
 
-Remember, it is crucial that you complete the entire translation without stopping.
-If you find yourself running out of space, simply continue in a new response, picking up exactly where you left off.
+Remember, it is crucial that you complete the entire translation without stopping, within only one response.
 
 Now, please proceed with your translation of the draft paragraphs.`;
 
@@ -50,7 +49,9 @@ Please follow these steps to complete the translation:
 6. Review and refine your translation, making sure it flows smoothly and captures the excitement and atmosphere of a fantasy novel.
 
 DIFFICULT NAMES:
-${Object.entries(names).map(([key, value]) => `${key}: ${value}`).join("\n")}
+${Object.entries(names)
+  .map(([key, value]) => `${key}: ${value}`)
+  .join("\n")}
 If the name is not in the list, please translate it to English as best as you can.
 
 Example output structure:
@@ -58,12 +59,11 @@ Example output structure:
 [Your complete Vietnamese translation of the novel, from beginning to end]
 </translation>
 
-Remember, it is crucial that you complete the entire translation without stopping.
-If you find yourself running out of space, simply continue in a new response, picking up exactly where you left off.
+Remember, it is crucial that you complete the entire translation without stopping, within only one response.
 
 Now, please proceed with your translation of the original paragraphs.`;
 
 export const PROMPT_MAP: Record<Mode, string> = {
-	wuxia: SYSTEM_PROMPT_WUXIA,
-	fantasy_translate: SYSTEM_PROMPT_FANTASY,
+  wuxia: SYSTEM_PROMPT_WUXIA,
+  fantasy_translate: SYSTEM_PROMPT_FANTASY,
 };
