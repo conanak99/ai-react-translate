@@ -1,18 +1,18 @@
 import { cache } from "@/lib/cache";
 import { getNames } from "@/pocket";
 
-const getNamesCached = async () => {
-  const CACHE_KEY = "names";
+// const getNamesCached = async () => {
+//   const CACHE_KEY = "names";
 
-  const cachedNames = await cache.get(CACHE_KEY) as Record<string, string>;
-  if (cachedNames) {
-    return cachedNames;
-  }
+//   const cachedNames = await cache.get(CACHE_KEY) as Record<string, string>;
+//   if (cachedNames) {
+//     return cachedNames;
+//   }
 
-  const names = await getNames();
-  cache.set(CACHE_KEY, names, 5 * 60 * 1000); // 5 minutes
-  return names;
-};
+//   const names = await getNames();
+//   cache.set(CACHE_KEY, names, 5 * 60 * 1000); // 5 minutes
+//   return names;
+// };
 
 export type Mode = "wuxia" | "fantasy_translate";
 
@@ -45,7 +45,7 @@ Remember, it is crucial that you complete the entire translation without stoppin
 Now, please proceed with your translation of the draft paragraphs.`;
 
 export async function getSystemPromptFantasy() {
-  const names = await getNamesCached();
+  const names = await getNames();
 
   return `You are a highly skilled translator and writer specializing in fantasy novels.
 Your task is to transform original Chinese script into a polished Vietnamese fantasy novel translation, adhering to the genre's style and conventions.
