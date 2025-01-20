@@ -15,7 +15,7 @@ type KeyValue = {
   updated: string;
   key: string;
   value: string;
-  json: string;
+  json: object;
 };
 
 interface Link {
@@ -36,6 +36,11 @@ async function getKeyValue(key: string) {
 export async function getTranslateUrl() {
   const record = await getKeyValue(KEY);
   return record.value;
+}
+
+export async function getNames(): Promise<Record<string, string>> {
+  const record = await getKeyValue("names");
+  return record.json as Record<string, string>;
 }
 
 export async function setTranslateUrl(url: string) {

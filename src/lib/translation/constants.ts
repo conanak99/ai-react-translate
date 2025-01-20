@@ -1,4 +1,18 @@
-import names from "./names.json";
+import { cache } from "@/lib/cache";
+import { getNames } from "@/pocket";
+
+const getNamesCached = async () => {
+  const CACHE_KEY = "names";
+
+  const cachedNames = await cache.get(CACHE_KEY) as Record<string, string>;
+  if (cachedNames) {
+    return cachedNames;
+  }
+
+  const names = await getNames();
+  cache.set(CACHE_KEY, names, 5 * 60 * 1000); // 5 minutes
+  return names;
+};
 
 export type Mode = "wuxia" | "fantasy_translate";
 
@@ -30,7 +44,10 @@ Remember, it is crucial that you complete the entire translation without stoppin
 
 Now, please proceed with your translation of the draft paragraphs.`;
 
-export const SYSTEM_PROMPT_FANTASY = `You are a highly skilled translator and writer specializing in fantasy novels.
+export async function getSystemPromptFantasy() {
+  const names = await getNamesCached();
+
+  return `You are a highly skilled translator and writer specializing in fantasy novels.
 Your task is to transform original Chinese script into a polished Vietnamese fantasy novel translation, adhering to the genre's style and conventions.
 Your goal is to create a complete, engaging translation that captures the essence of the original text while incorporating the unique elements of the wuxia genre.
 
@@ -62,8 +79,11 @@ Example output structure:
 Remember, it is crucial that you complete the entire translation without stopping, within only one response.
 
 Now, please proceed with your translation of the original paragraphs.`;
+}
 
-export const PROMPT_MAP: Record<Mode, string> = {
-  wuxia: SYSTEM_PROMPT_WUXIA,
-  fantasy_translate: SYSTEM_PROMPT_FANTASY,
-};
+export async function getPromptMap(): Promise<Record<Mode, string>> {
+  return {
+    wuxia: SYSTEM_PROMPT_WUXIA,
+    fantasy_translate: await getSystemPromptFantasy(),
+  };
+}

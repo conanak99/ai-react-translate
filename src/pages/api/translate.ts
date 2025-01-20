@@ -2,7 +2,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText } from "ai";
 import type { APIRoute } from "astro";
 import delay from "delay";
-import { type Mode, PROMPT_MAP } from "../../lib/translation/constants";
+import { type Mode, getPromptMap } from "../../lib/translation/constants";
 import { getNextChapterUrl } from "@/lib/utils";
 
 // const openai = createOpenAI({
@@ -26,6 +26,7 @@ const RESULT_CACHE: Map<
 
 async function getStreamResult(url: string, mode: Mode): Promise<Result> {
 	console.log(`Fetching content from: https://r.jina.ai/${url}`);
+
 	const response = await fetch(`https://r.jina.ai/${url}`, {
 		headers: {
 			Authorization: `Bearer ${import.meta.env.JINA_API_KEY}`,
@@ -34,6 +35,8 @@ async function getStreamResult(url: string, mode: Mode): Promise<Result> {
 
 	const html = await response.text();
 	console.log("Content fetched successfully");
+
+	const PROMPT_MAP = await getPromptMap();
 
 	console.time("streamText");
 	const result = await streamText({
