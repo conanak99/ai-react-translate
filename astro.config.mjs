@@ -7,8 +7,6 @@ import tailwind from "@astrojs/tailwind";
 
 import node from "@astrojs/node";
 
-import cloudflare from "@astrojs/cloudflare";
-
 // https://astro.build/config
 export default defineConfig({
   output: "server",
@@ -19,6 +17,8 @@ export default defineConfig({
     }),
   ],
 
-  adapter: cloudflare(),
+  adapter: node({
+    mode: "standalone",
+  }),
   server: { port: Number(process.env.PORT) || 4321 },
 });
