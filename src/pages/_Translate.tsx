@@ -36,6 +36,8 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
     },
   });
 
+  console.log({ error });
+
   useEffect(() => {
     if (input) {
       setTranslateUrl(input);
