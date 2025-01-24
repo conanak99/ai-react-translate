@@ -17,6 +17,8 @@ const google = createGoogleGenerativeAI({
   apiKey: import.meta.env.GOOGLE_GENERATIVE_AI_KEY,
 });
 
+console.log("API Key", import.meta.env.GOOGLE_GENERATIVE_AI_KEY);
+
 type Result = Awaited<ReturnType<typeof streamText>>;
 
 const RESULT_CACHE: Map<
