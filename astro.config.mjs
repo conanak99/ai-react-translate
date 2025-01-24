@@ -7,6 +7,8 @@ import tailwind from "@astrojs/tailwind";
 
 import node from "@astrojs/node";
 
+import netlify from "@astrojs/netlify";
+
 // https://astro.build/config
 export default defineConfig({
   output: "server",
@@ -17,8 +19,6 @@ export default defineConfig({
     }),
   ],
 
-  adapter: node({
-    mode: "standalone",
-  }),
+  adapter: netlify(),
   server: { port: Number(process.env.PORT) || 4321 },
 });
