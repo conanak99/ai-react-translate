@@ -17,8 +17,6 @@ const google = createGoogleGenerativeAI({
   apiKey: import.meta.env.GOOGLE_GENERATIVE_AI_KEY,
 });
 
-console.log("API Key", import.meta.env.GOOGLE_GENERATIVE_AI_KEY);
-
 type Result = Awaited<ReturnType<typeof streamText>>;
 
 const RESULT_CACHE: Map<
@@ -34,6 +32,9 @@ async function getStreamResult(url: string, mode: Mode): Promise<Result> {
       Authorization: `Bearer ${import.meta.env.JINA_API_KEY}`,
     },
   });
+
+  console.log("API Key", import.meta.env.GOOGLE_GENERATIVE_AI_KEY);
+  console.log("JINA API Key", import.meta.env.JINA_API_KEY);
 
   const html = await response.text();
   console.log("Content fetched successfully");
