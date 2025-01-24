@@ -19,6 +19,8 @@ export default defineConfig({
     }),
   ],
 
-  adapter: vercel(),
+  adapter: vercel({
+    maxDuration: 60,
+  }),
   server: { port: Number(process.env.PORT) || 4321 },
 });
