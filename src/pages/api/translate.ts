@@ -1,4 +1,5 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createDeepSeek } from "@ai-sdk/deepseek";
 import { streamText } from "ai";
 import type { APIRoute } from "astro";
 import delay from "delay";
@@ -12,6 +13,10 @@ import { getNextChapterUrl } from "@/lib/utils";
 // const anthropic = createAnthropic({
 //   apiKey: import.meta.env.CLAUDE_AI_KEY,
 // });
+
+const deepseek = createDeepSeek({
+  apiKey: import.meta.env.DEEPSEEK_API_KEY ?? "",
+});
 
 const google = createGoogleGenerativeAI({
   apiKey: import.meta.env.GOOGLE_GENERATIVE_AI_KEY,
@@ -43,20 +48,21 @@ async function getStreamResult(url: string, mode: Mode): Promise<Result> {
     // model: openai("gpt-4o-mini"),
     // model: anthropic("claude-3-5-sonnet-20241022"),
     maxTokens: 8192,
-    model: google("gemini-1.5-pro-002", {
-      safetySettings: [
-        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-        {
-          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-          threshold: "BLOCK_NONE",
-        },
-        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-        {
-          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-          threshold: "BLOCK_NONE",
-        },
-      ],
-    }),
+    // model: google("gemini-1.5-pro-002", {
+    //   safetySettings: [
+    //     { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+    //     {
+    //       category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+    //       threshold: "BLOCK_NONE",
+    //     },
+    //     { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+    //     {
+    //       category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+    //       threshold: "BLOCK_NONE",
+    //     },
+    //   ],
+    // }),
+    model: deepseek("deepseek-reasoner"),
     messages: [
       {
         role: "system",

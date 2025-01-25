@@ -18,9 +18,8 @@ export default defineConfig({
       applyBaseStyles: false,
     }),
   ],
-
-  adapter: vercel({
-    maxDuration: 60,
+  adapter: node({
+    mode: "standalone",
   }),
   server: { port: Number(process.env.PORT) || 4321 },
 });
