@@ -48,21 +48,25 @@ async function getStreamResult(url: string, mode: Mode): Promise<Result> {
     // model: openai("gpt-4o-mini"),
     // model: anthropic("claude-3-5-sonnet-20241022"),
     maxTokens: 8192,
-    // model: google("gemini-1.5-pro-002", {
-    //   safetySettings: [
-    //     { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-    //     {
-    //       category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-    //       threshold: "BLOCK_NONE",
-    //     },
-    //     { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-    //     {
-    //       category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-    //       threshold: "BLOCK_NONE",
-    //     },
-    //   ],
-    // }),
-    model: deepseek("deepseek-reasoner"),
+    model: google("gemini-2.5-pro-exp-03-25", {
+      safetySettings: [
+        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_NONE",
+        },
+        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_NONE",
+        },
+        {
+          category: "HARM_CATEGORY_CIVIC_INTEGRITY",
+          threshold: "BLOCK_NONE",
+        },
+      ],
+    }),
+    // model: deepseek("deepseek-reasoner"),
     messages: [
       {
         role: "system",
