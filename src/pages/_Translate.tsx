@@ -1,4 +1,4 @@
-import { useCompletion } from "ai/react";
+import { useCompletion } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { setTranslateUrl, addLink } from "../pocket";

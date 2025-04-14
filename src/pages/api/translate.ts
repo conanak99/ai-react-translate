@@ -168,6 +168,7 @@ export const POST: APIRoute = async ({ request }) => {
         console.error({ error });
         return "Error";
       },
+      sendReasoning: true,
     }) ?? new Response(null, { status: 501 })
   );
 };
