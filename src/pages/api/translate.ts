@@ -47,7 +47,9 @@ async function getStreamResult(url: string, mode: Mode): Promise<Result> {
   const result = await streamText({
     // model: openai("gpt-4o-mini"),
     // model: anthropic("claude-3-5-sonnet-20241022"),
-    maxTokens: 8192,
+    // model: deepseek("deepseek-reasoner"),
+    maxTokens: 32_000,
+    experimental_continueSteps: true,
     model: google("gemini-2.5-pro-exp-03-25", {
       safetySettings: [
         { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -66,7 +68,7 @@ async function getStreamResult(url: string, mode: Mode): Promise<Result> {
         },
       ],
     }),
-    // model: deepseek("deepseek-reasoner"),
+
     messages: [
       {
         role: "system",
