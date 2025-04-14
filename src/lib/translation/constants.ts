@@ -104,7 +104,8 @@ Avoid complex sentence structures or obscure vocabulary that might hinder compre
 - Formatting: Present the translated text in a clear and organized manner, using appropriate punctuation, paragraph breaks, and dialogue formatting.
 
 Deliverables:
-- The complete Vietnamese translation of the provided Japanese excerpt.
+- The complete Vietnamese translation of the provided excerpt.
+- Do not cut off or remove any section. If the input is too long, just translate everything, then you will be prompted to continue.
 - A brief commentary explaining any significant translation choices you made, including localization decisions, challenges encountered, and justifications for your approach.
 This commentary should demonstrate your understanding of the nuances of translating Japanese light novels for an Vietnamese-speaking audience.
 For example, if you chose to translate a specific Japanese word in a non-literal way, explain your reasoning.
