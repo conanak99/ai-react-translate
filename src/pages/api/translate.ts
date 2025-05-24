@@ -1,26 +1,10 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { createDeepSeek } from "@ai-sdk/deepseek";
 import { streamText } from "ai";
 import type { APIRoute } from "astro";
 import delay from "delay";
 import { type Mode, getPromptMap } from "../../lib/translation/constants";
 import { getNextChapterUrl } from "@/lib/utils";
+import { anthropicModel, googleModel } from "@/lib/models";
 
-// const openai = createOpenAI({
-//   apiKey: import.meta.env.OPEN_AI_KEY,
-// });
-
-// const anthropic = createAnthropic({
-//   apiKey: import.meta.env.CLAUDE_AI_KEY,
-// });
-
-const deepseek = createDeepSeek({
-  apiKey: import.meta.env.DEEPSEEK_API_KEY ?? "",
-});
-
-const google = createGoogleGenerativeAI({
-  apiKey: import.meta.env.GOOGLE_GENERATIVE_AI_KEY,
-});
 
 type Result = Awaited<ReturnType<typeof streamText>>;
 
@@ -29,7 +13,11 @@ const RESULT_CACHE: Map<
   { status: "pending" | "success"; result?: Result }
 > = new Map();
 
-async function getStreamResult(url: string, mode: Mode): Promise<Result> {
+function getCacheKey(url: string, mode: Mode, model: 'google' | 'anthropic'): string {
+  return `${url}|${mode}|${model}`;
+}
+
+async function getStreamResult(url: string, mode: Mode, model: 'google' | 'anthropic' = 'google'): Promise<Result> {
   console.log(`Fetching content from: https://r.jina.ai/${url}`);
 
   const response = await fetch(`https://r.jina.ai/${url}`, {
@@ -46,25 +34,7 @@ async function getStreamResult(url: string, mode: Mode): Promise<Result> {
   console.time("streamText");
   const result = await streamText({
     // model: openai("gpt-4o-mini"),
-    // model: anthropic("claude-3-5-sonnet-20241022"),
-    model: google("gemini-2.5-pro-preview-05-06", {
-      safetySettings: [
-        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-        {
-          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-          threshold: "BLOCK_NONE",
-        },
-        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-        {
-          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-          threshold: "BLOCK_NONE",
-        },
-        {
-          category: "HARM_CATEGORY_CIVIC_INTEGRITY",
-          threshold: "BLOCK_NONE",
-        },
-      ],
-    }),
+    model: model === 'google' ? googleModel : anthropicModel,
     // model: deepseek("deepseek-reasoner"),
     // maxTokens: 8192,
     messages: [
@@ -80,6 +50,13 @@ ${html}
 </draft>`,
       },
     ],
+    ...(model === 'anthropic' && {
+      providerOptions: {
+        anthropic: {
+          thinking: { type: 'enabled', budgetTokens: 2048 },
+        }
+      },
+    }),
   });
   console.timeEnd("streamText");
 
@@ -89,14 +66,16 @@ ${html}
 async function getStreamFromCache(
   url: string,
   mode: Mode,
-  ignoreCache: boolean
+  ignoreCache: boolean,
+  model: 'google' | 'anthropic' = 'google'
 ): Promise<Result> {
-  console.log({ url, ignoreCache });
+  const cacheKey = getCacheKey(url, mode, model);
+  console.log({ url, mode, model, cacheKey, ignoreCache });
 
   let result: Result | undefined;
 
-  if (!ignoreCache && RESULT_CACHE.has(url)) {
-    const cache = RESULT_CACHE.get(url);
+  if (!ignoreCache && RESULT_CACHE.has(cacheKey)) {
+    const cache = RESULT_CACHE.get(cacheKey);
     if (cache?.status === "success") {
       result = cache.result;
     } else {
@@ -107,7 +86,7 @@ async function getStreamFromCache(
       while (Date.now() - startTime < twoMinutes) {
         // Check if cache was updated
         console.log("Checking cache...", Date.now() - startTime);
-        const currentCache = RESULT_CACHE.get(url);
+        const currentCache = RESULT_CACHE.get(cacheKey);
         if (currentCache?.status === "success") {
           result = currentCache.result;
           break;
@@ -123,17 +102,17 @@ async function getStreamFromCache(
     }
   } else {
     try {
-      RESULT_CACHE.set(url, { status: "pending" });
-      result = await getStreamResult(url, mode);
-      RESULT_CACHE.set(url, { status: "success", result });
+      RESULT_CACHE.set(cacheKey, { status: "pending" });
+      result = await getStreamResult(url, mode, model);
+      RESULT_CACHE.set(cacheKey, { status: "success", result });
     } catch (error) {
-      RESULT_CACHE.delete(url);
+      RESULT_CACHE.delete(cacheKey);
       throw error;
     }
   }
 
   if (!result) {
-    RESULT_CACHE.delete(url);
+    RESULT_CACHE.delete(cacheKey);
     throw new Error("No result");
   }
 
@@ -145,19 +124,21 @@ export const POST: APIRoute = async ({ request }) => {
     prompt,
     ignoreCache,
     mode = "wuxia",
+    model = "google",
   }: {
     prompt: string;
     ignoreCache: boolean;
     mode: Mode;
+    model: 'google' | 'anthropic';
   } = await request.json();
   const url = prompt;
 
-  const result = await getStreamFromCache(url, mode, ignoreCache);
+  const result = await getStreamFromCache(url, mode, ignoreCache, model);
 
   if (!ignoreCache) {
     // Just call it to prefetch next chapter
     const nextChapterUrl = getNextChapterUrl(url);
-    getStreamFromCache(nextChapterUrl, mode, ignoreCache);
+    getStreamFromCache(nextChapterUrl, mode, ignoreCache, model);
   }
 
   return (

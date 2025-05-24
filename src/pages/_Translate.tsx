@@ -10,6 +10,10 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
   const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
   const [mode, setMode] = useLocalStorage<Mode>("mode", "light_novel");
+  const [model, setModel] = useLocalStorage<"google" | "anthropic">(
+    "model",
+    "google"
+  );
   const [ignoreCache, setIgnoreCache] = useState(false);
 
   useEffect(() => {
@@ -33,6 +37,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
     body: {
       ignoreCache,
       mode,
+      model,
     },
   });
 
@@ -55,7 +60,13 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
         : getPreviousChapterUrl(input);
 
     setInput(newUrl);
-    complete(newUrl);
+    complete(newUrl, {
+      body: {
+        ignoreCache,
+        mode,
+        model,
+      },
+    });
 
     // Scroll to top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -135,6 +146,9 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
             </div>
 
             <div className="flex flex-wrap items-center gap-4 ml-0 md:ml-8">
+              <span className="text-gray-700 dark:text-gray-300 font-medium text-sm">
+                Translation Mode:
+              </span>
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -184,6 +198,50 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
                   className="text-gray-700 dark:text-gray-300"
                 >
                   Fantasy
+                </label>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 ml-0 md:ml-8 border-l-2 border-gray-300 dark:border-gray-600 pl-4">
+              <span className="text-gray-700 dark:text-gray-300 font-medium text-sm">
+                AI Model:
+              </span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  id="google_model"
+                  name="model"
+                  value="google"
+                  checked={model === "google"}
+                  onChange={(e) =>
+                    setModel(e.target.value as "google" | "anthropic")
+                  }
+                  className="scale-125"
+                />
+                <label
+                  htmlFor="google_model"
+                  className="text-gray-700 dark:text-gray-300"
+                >
+                  Google Gemini
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  id="anthropic_model"
+                  name="model"
+                  value="anthropic"
+                  checked={model === "anthropic"}
+                  onChange={(e) =>
+                    setModel(e.target.value as "google" | "anthropic")
+                  }
+                  className="scale-125"
+                />
+                <label
+                  htmlFor="anthropic_model"
+                  className="text-gray-700 dark:text-gray-300"
+                >
+                  Claude
                 </label>
               </div>
             </div>
