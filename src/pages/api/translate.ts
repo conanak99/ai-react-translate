@@ -47,29 +47,26 @@ async function getStreamResult(url: string, mode: Mode): Promise<Result> {
   const result = await streamText({
     // model: openai("gpt-4o-mini"),
     // model: anthropic("claude-3-5-sonnet-20241022"),
+    model: google("gemini-2.5-pro-preview-05-06", {
+      safetySettings: [
+        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_NONE",
+        },
+        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_NONE",
+        },
+        {
+          category: "HARM_CATEGORY_CIVIC_INTEGRITY",
+          threshold: "BLOCK_NONE",
+        },
+      ],
+    }),
     // model: deepseek("deepseek-reasoner"),
-    model: google('gemini-2.5-pro-preview-05-06'),
     // maxTokens: 8192,
-    experimental_continueSteps: true,
-    // model: google("gemini-2.5-pro-exp-03-25", {
-    //   safetySettings: [
-    //     { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-    //     {
-    //       category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-    //       threshold: "BLOCK_NONE",
-    //     },
-    //     { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-    //     {
-    //       category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-    //       threshold: "BLOCK_NONE",
-    //     },
-    //     {
-    //       category: "HARM_CATEGORY_CIVIC_INTEGRITY",
-    //       threshold: "BLOCK_NONE",
-    //     },
-    //   ],
-    // }),
-
     messages: [
       {
         role: "system",
