@@ -3,7 +3,7 @@ import type { APIRoute } from "astro";
 import delay from "delay";
 import { type Mode, getPromptMap } from "../../lib/translation/constants";
 import { getNextChapterUrl } from "@/lib/utils";
-import { anthropicModel, googleModel } from "@/lib/models";
+import { type ModelType, MODEL_MAP } from "@/lib/models";
 
 
 type Result = Awaited<ReturnType<typeof streamText>>;
@@ -13,11 +13,11 @@ const RESULT_CACHE: Map<
   { status: "pending" | "success"; result?: Result }
 > = new Map();
 
-function getCacheKey(url: string, mode: Mode, model: 'google' | 'anthropic'): string {
+function getCacheKey(url: string, mode: Mode, model: ModelType): string {
   return `${url}|${mode}|${model}`;
 }
 
-async function getStreamResult(url: string, mode: Mode, model: 'google' | 'anthropic' = 'google'): Promise<Result> {
+async function getStreamResult(url: string, mode: Mode, model: ModelType = 'google'): Promise<Result> {
   console.log(`Fetching content from: https://r.jina.ai/${url}`);
 
   const response = await fetch(`https://r.jina.ai/${url}`, {
@@ -33,7 +33,7 @@ async function getStreamResult(url: string, mode: Mode, model: 'google' | 'anthr
 
   console.time("streamText");
   const result = await streamText({
-    model: model === 'google' ? googleModel : anthropicModel,
+    model: MODEL_MAP[model],
     maxTokens: model === 'anthropic' ? 32_000 : undefined,
     messages: [
       {
@@ -65,7 +65,7 @@ async function getStreamFromCache(
   url: string,
   mode: Mode,
   ignoreCache: boolean,
-  model: 'google' | 'anthropic' = 'google'
+  model: ModelType = 'google'
 ): Promise<Result> {
   const cacheKey = getCacheKey(url, mode, model);
   console.log({ url, mode, model, cacheKey, ignoreCache });
@@ -127,7 +127,7 @@ export const POST: APIRoute = async ({ request }) => {
     prompt: string;
     ignoreCache: boolean;
     mode: Mode;
-    model: 'google' | 'anthropic';
+    model: ModelType;
   } = await request.json();
   const url = prompt;
 

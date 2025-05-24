@@ -4,16 +4,14 @@ import { useLocalStorage } from "usehooks-ts";
 import { setTranslateUrl, addLink } from "../pocket";
 
 import type { Mode } from "@/lib/translation/constants";
+import type { ModelType } from "@/lib/models";
 import { getNextChapterUrl, getPreviousChapterUrl } from "@/lib/utils";
 
 const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
   const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
   const [mode, setMode] = useLocalStorage<Mode>("mode", "light_novel");
-  const [model, setModel] = useLocalStorage<"google" | "anthropic">(
-    "model",
-    "google"
-  );
+  const [model, setModel] = useLocalStorage<ModelType>("model", "google");
   const [ignoreCache, setIgnoreCache] = useState(false);
 
   useEffect(() => {
@@ -127,8 +125,9 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
           </div>
         </form>
 
-        <div className="flex flex-col sm:flex-row justify-end gap-4 sm:gap-2 px-4 items-start sm:items-center">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-2 w-full sm:mr-auto">
+        <div className="flex flex-col gap-4 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          {/* First row: Ignore Cache and Font/Theme controls */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -145,10 +144,37 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
               </label>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 ml-0 md:ml-8">
-              <span className="text-gray-700 dark:text-gray-300 font-medium text-sm">
-                Translation Mode:
-              </span>
+            <div className="flex gap-2">
+              <button
+                onClick={decreaseFontSize}
+                type="button"
+                className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
+              >
+                A-
+              </button>
+              <button
+                onClick={increaseFontSize}
+                type="button"
+                className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
+              >
+                A+
+              </button>
+              <button
+                onClick={toggleTheme}
+                type="button"
+                className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
+              >
+                {isDarkMode ? "☀️" : "🌙"}
+              </button>
+            </div>
+          </div>
+
+          {/* Second row: Translation Mode */}
+          <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+            <span className="text-gray-700 dark:text-gray-300 font-medium text-sm whitespace-nowrap">
+              Translation Mode:
+            </span>
+            <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -201,11 +227,14 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
                 </label>
               </div>
             </div>
+          </div>
 
-            <div className="flex flex-wrap items-center gap-4 ml-0 md:ml-8 border-l-2 border-gray-300 dark:border-gray-600 pl-4">
-              <span className="text-gray-700 dark:text-gray-300 font-medium text-sm">
-                AI Model:
-              </span>
+          {/* Third row: AI Model */}
+          <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+            <span className="text-gray-700 dark:text-gray-300 font-medium text-sm whitespace-nowrap">
+              AI Model:
+            </span>
+            <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -213,9 +242,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
                   name="model"
                   value="google"
                   checked={model === "google"}
-                  onChange={(e) =>
-                    setModel(e.target.value as "google" | "anthropic")
-                  }
+                  onChange={(e) => setModel(e.target.value as ModelType)}
                   className="scale-125"
                 />
                 <label
@@ -228,13 +255,28 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
+                  id="legacy_model"
+                  name="model"
+                  value="legacy"
+                  checked={model === "legacy"}
+                  onChange={(e) => setModel(e.target.value as ModelType)}
+                  className="scale-125"
+                />
+                <label
+                  htmlFor="legacy_model"
+                  className="text-gray-700 dark:text-gray-300"
+                >
+                  Legacy Gemini
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="radio"
                   id="anthropic_model"
                   name="model"
                   value="anthropic"
                   checked={model === "anthropic"}
-                  onChange={(e) =>
-                    setModel(e.target.value as "google" | "anthropic")
-                  }
+                  onChange={(e) => setModel(e.target.value as ModelType)}
                   className="scale-125"
                 />
                 <label
@@ -245,29 +287,6 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
                 </label>
               </div>
             </div>
-          </div>
-          <div className="flex gap-2 w-full sm:w-auto justify-end">
-            <button
-              onClick={decreaseFontSize}
-              type="button"
-              className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
-            >
-              A-
-            </button>
-            <button
-              onClick={increaseFontSize}
-              type="button"
-              className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
-            >
-              A+
-            </button>
-            <button
-              onClick={toggleTheme}
-              type="button"
-              className="bg-gray-200 dark:bg-gray-700 dark:text-white px-3 py-1 rounded hover:bg-opacity-80"
-            >
-              {isDarkMode ? "☀️" : "🌙"}
-            </button>
           </div>
         </div>
 
