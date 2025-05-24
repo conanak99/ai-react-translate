@@ -33,11 +33,8 @@ async function getStreamResult(url: string, mode: Mode, model: 'google' | 'anthr
 
   console.time("streamText");
   const result = await streamText({
-    // model: openai("gpt-4o-mini"),
     model: model === 'google' ? googleModel : anthropicModel,
     maxTokens: model === 'anthropic' ? 32_000 : undefined,
-    // model: deepseek("deepseek-reasoner"),
-    // maxTokens: 8192,
     messages: [
       {
         role: "system",
