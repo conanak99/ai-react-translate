@@ -2,7 +2,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createDeepSeek } from "@ai-sdk/deepseek";
 import { createAnthropic } from "@ai-sdk/anthropic";
 
-export type ModelType = 'google' | 'anthropic' | 'legacy';
+export type ModelType = 'google' | 'anthropic' | 'legacy' | 'deepseek';
 
 const anthropic = createAnthropic({
 	apiKey: import.meta.env.CLAUDE_AI_KEY,
@@ -60,4 +60,5 @@ export const MODEL_MAP = {
 	google: googleModel,
 	anthropic: anthropicModel,
 	legacy: legacyGoogleModel,
+	deepseek: deepseekModel,
 } as const;

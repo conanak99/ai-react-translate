@@ -286,6 +286,23 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
                   Claude
                 </label>
               </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  id="deepseek_model"
+                  name="model"
+                  value="deepseek"
+                  checked={model === "deepseek"}
+                  onChange={(e) => setModel(e.target.value as ModelType)}
+                  className="scale-125"
+                />
+                <label
+                  htmlFor="deepseek_model"
+                  className="text-gray-700 dark:text-gray-300"
+                >
+                  DeepSeek
+                </label>
+              </div>
             </div>
           </div>
         </div>
