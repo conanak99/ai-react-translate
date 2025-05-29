@@ -62,3 +62,8 @@ export const MODEL_MAP = {
 	legacy: legacyGoogleModel,
 	deepseek: deepseekModel,
 } as const;
+
+export const MODEL_MAX_TOKENS: Partial<Record<ModelType, number>> = {
+  anthropic: 32000,
+  deepseek: 8192,
+};

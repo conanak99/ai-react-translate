@@ -3,7 +3,7 @@ import type { APIRoute } from "astro";
 import delay from "delay";
 import { type Mode, getPromptMap } from "../../lib/translation/constants";
 import { getNextChapterUrl } from "@/lib/utils";
-import { type ModelType, MODEL_MAP } from "@/lib/models";
+import { type ModelType, MODEL_MAP, MODEL_MAX_TOKENS } from "@/lib/models";
 
 
 type Result = Awaited<ReturnType<typeof streamText>>;
@@ -34,7 +34,7 @@ async function getStreamResult(url: string, mode: Mode, model: ModelType = 'goog
   console.time("streamText");
   const result = await streamText({
     model: MODEL_MAP[model],
-    maxTokens: model === 'anthropic' ? 32_000 : undefined,
+    maxTokens: MODEL_MAX_TOKENS[model],
     messages: [
       {
         role: "system",
