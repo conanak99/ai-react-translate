@@ -1,10 +1,11 @@
+import type { AnthropicProviderOptions } from "@ai-sdk/anthropic";
+import type { GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
 import { streamText } from "ai";
 import type { APIRoute } from "astro";
 import delay from "delay";
-import { type Mode, getPromptMap } from "../../lib/translation/constants";
+import { MODEL_MAP, MODEL_MAX_TOKENS, type ModelType } from "@/lib/models";
 import { getNextChapterUrl } from "@/lib/utils";
-import { type ModelType, MODEL_MAP, MODEL_MAX_TOKENS } from "@/lib/models";
-
+import { getPromptMap, type Mode } from "../../lib/translation/constants";
 
 type Result = Awaited<ReturnType<typeof streamText>>;
 
@@ -17,7 +18,11 @@ function getCacheKey(url: string, mode: Mode, model: ModelType): string {
   return `${url}|${mode}|${model}`;
 }
 
-async function getStreamResult(url: string, mode: Mode, model: ModelType = 'google'): Promise<Result> {
+async function getStreamResult(
+  url: string,
+  mode: Mode,
+  model: ModelType = "google"
+): Promise<Result> {
   console.log(`Fetching content from: https://r.jina.ai/${url}`);
 
   const response = await fetch(`https://r.jina.ai/${url}`, {
@@ -32,7 +37,7 @@ async function getStreamResult(url: string, mode: Mode, model: ModelType = 'goog
   const PROMPT_MAP = await getPromptMap();
 
   console.time("streamText");
-  const result = await streamText({
+  const result = streamText({
     model: MODEL_MAP[model],
     maxTokens: MODEL_MAX_TOKENS[model],
     messages: [
@@ -48,11 +53,20 @@ ${html}
 </draft>`,
       },
     ],
-    ...(model === 'anthropic' && {
+    ...(model === "anthropic" && {
       providerOptions: {
         anthropic: {
-          thinking: { type: 'enabled', budgetTokens: 2048 },
-        }
+          thinking: { type: "enabled", budgetTokens: 2048 },
+        } satisfies AnthropicProviderOptions,
+      },
+    }),
+    ...(model === "google" && {
+      providerOptions: {
+        google: {
+          thinkingConfig: {
+            thinkingBudget: 2048,
+          },
+        } satisfies GoogleGenerativeAIProviderOptions,
       },
     }),
   });
@@ -65,7 +79,7 @@ async function getStreamFromCache(
   url: string,
   mode: Mode,
   ignoreCache: boolean,
-  model: ModelType = 'google'
+  model: ModelType = "google"
 ): Promise<Result> {
   const cacheKey = getCacheKey(url, mode, model);
   console.log({ url, mode, model, cacheKey, ignoreCache });

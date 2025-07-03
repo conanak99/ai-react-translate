@@ -1,11 +1,11 @@
 import { useCompletion } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import { setTranslateUrl, addLink } from "../pocket";
+import type { ModelType } from "@/lib/models";
 
 import type { Mode } from "@/lib/translation/constants";
-import type { ModelType } from "@/lib/models";
 import { getNextChapterUrl, getPreviousChapterUrl } from "@/lib/utils";
+import { addLink, setTranslateUrl } from "../pocket";
 
 const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
   const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
@@ -214,8 +214,8 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
                   type="radio"
                   id="fantasy"
                   name="mode"
-                  value="fantasy_translate"
-                  checked={mode === "fantasy_translate"}
+                  value="fantasy"
+                  checked={mode === "fantasy"}
                   onChange={(e) => setMode(e.target.value as Mode)}
                   className="scale-125"
                 />
