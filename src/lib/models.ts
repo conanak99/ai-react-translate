@@ -16,39 +16,12 @@ const google = createGoogleGenerativeAI({
   apiKey: import.meta.env.GOOGLE_GENERATIVE_AI_KEY,
 });
 
-export const anthropicModel = anthropic("claude-4-sonnet-20250514", {});
+export const anthropicModel = anthropic("claude-4-sonnet-20250514");
 
-export const googleModel = google("gemini-2.5-pro-preview-05-06", {
-  safetySettings: [
-    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-    {
-      category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-      threshold: "BLOCK_NONE",
-    },
-    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-    {
-      category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-      threshold: "BLOCK_NONE",
-    },
-    {
-      category: "HARM_CATEGORY_CIVIC_INTEGRITY",
-      threshold: "BLOCK_NONE",
-    },
-  ],
-});
+export const googleModel = google("gemini-2.5-pro");
 
 // Why? Because old model is less censored haizz
-export const legacyGoogleModel = google("gemini-1.5-pro-latest", {
-  safetySettings: [
-    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
-    {
-      category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-      threshold: "BLOCK_NONE",
-    },
-    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-  ],
-});
+export const legacyGoogleModel = google("gemini-1.5-pro-latest");
 
 // Keep deepseek for potential future use
 export const deepseekModel = deepseek("deepseek-reasoner");

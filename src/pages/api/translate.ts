@@ -1,5 +1,5 @@
 import type { AnthropicProviderOptions } from "@ai-sdk/anthropic";
-import type { GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
+import { type GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
 import { streamText } from "ai";
 import type { APIRoute } from "astro";
 import delay from "delay";
@@ -39,7 +39,7 @@ async function getStreamResult(
   console.time("streamText");
   const result = streamText({
     model: MODEL_MAP[model],
-    maxTokens: MODEL_MAX_TOKENS[model],
+    maxOutputTokens: MODEL_MAX_TOKENS[model],
     messages: [
       {
         role: "system",
@@ -63,9 +63,22 @@ ${html}
     ...(model === "google" && {
       providerOptions: {
         google: {
-          thinkingConfig: {
-            thinkingBudget: 2048,
-          },
+          safetySettings: [
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+            {
+              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+              threshold: "BLOCK_NONE",
+            },
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+            {
+              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+              threshold: "BLOCK_NONE",
+            },
+            {
+              category: "HARM_CATEGORY_CIVIC_INTEGRITY",
+              threshold: "BLOCK_NONE",
+            },
+          ],
         } satisfies GoogleGenerativeAIProviderOptions,
       },
     }),
@@ -153,13 +166,5 @@ export const POST: APIRoute = async ({ request }) => {
     getStreamFromCache(nextChapterUrl, mode, ignoreCache, model);
   }
 
-  return (
-    result?.toDataStreamResponse({
-      getErrorMessage: (error) => {
-        console.error({ error });
-        return "Error";
-      },
-      sendReasoning: true,
-    }) ?? new Response(null, { status: 501 })
-  );
+  return result?.toUIMessageStreamResponse() ?? new Response(null, { status: 501 });
 };
