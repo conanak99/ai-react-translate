@@ -41,12 +41,12 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 
   console.error({ error });
 
-  useEffect(() => {
-    if (input) {
-      setTranslateUrl(input);
-      addLink(input);
-    }
-  }, [input]);
+  // useEffect(() => {
+  //   if (input) {
+  //     setTranslateUrl(input);
+  //     addLink(input);
+  //   }
+  // }, [input]);
 
   async function goToChapter(direction: "next" | "previous") {
     stop();
@@ -56,6 +56,9 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
       direction === "next"
         ? getNextChapterUrl(input)
         : getPreviousChapterUrl(input);
+
+    setTranslateUrl(newUrl); // update the url in the pocketbase
+    addLink(input);
 
     setInput(newUrl);
     complete(newUrl, {
