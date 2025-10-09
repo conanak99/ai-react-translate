@@ -16,7 +16,7 @@ const google = createGoogleGenerativeAI({
   apiKey: import.meta.env.GOOGLE_GENERATIVE_AI_KEY,
 });
 
-export const anthropicModel = anthropic("claude-4-sonnet-20250514");
+export const anthropicModel = anthropic("claude-sonnet-4-5-20250929");
 
 export const googleModel = google("gemini-2.5-pro");
 
