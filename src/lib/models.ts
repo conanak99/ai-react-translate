@@ -2,7 +2,7 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { createDeepSeek } from "@ai-sdk/deepseek";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
-export type ModelType = "google" | "anthropic" | "legacy" | "deepseek";
+export type ModelType = "google" | "anthropic" | "deepseek";
 
 const anthropic = createAnthropic({
   apiKey: import.meta.env.CLAUDE_AI_KEY,
@@ -20,9 +20,6 @@ export const anthropicModel = anthropic("claude-sonnet-4-5-20250929");
 
 export const googleModel = google("gemini-2.5-pro");
 
-// Why? Because old model is less censored haizz
-export const legacyGoogleModel = google("gemini-1.5-pro-latest");
-
 // Keep deepseek for potential future use
 export const deepseekModel = deepseek("deepseek-reasoner");
 
@@ -30,7 +27,6 @@ export const deepseekModel = deepseek("deepseek-reasoner");
 export const MODEL_MAP = {
   google: googleModel,
   anthropic: anthropicModel,
-  legacy: legacyGoogleModel,
   deepseek: deepseekModel,
 } as const;
 

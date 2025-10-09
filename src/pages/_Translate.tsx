@@ -258,23 +258,6 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
-                  id="legacy_model"
-                  name="model"
-                  value="legacy"
-                  checked={model === "legacy"}
-                  onChange={(e) => setModel(e.target.value as ModelType)}
-                  className="scale-125"
-                />
-                <label
-                  htmlFor="legacy_model"
-                  className="text-gray-700 dark:text-gray-300"
-                >
-                  Legacy Gemini
-                </label>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
                   id="anthropic_model"
                   name="model"
                   value="anthropic"
