@@ -258,18 +258,18 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
-                  id="anthropic_model"
+                  id="geminiProMega_model"
                   name="model"
-                  value="anthropic"
-                  checked={model === "anthropic"}
+                  value="geminiProMega"
+                  checked={model === "geminiProMega"}
                   onChange={(e) => setModel(e.target.value as ModelType)}
                   className="scale-125"
                 />
                 <label
-                  htmlFor="anthropic_model"
+                  htmlFor="geminiProMega_model"
                   className="text-gray-700 dark:text-gray-300"
                 >
-                  Claude
+                  Google Gemini (MegaLLM)
                 </label>
               </div>
               <div className="flex items-center gap-2">
@@ -287,6 +287,23 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
                   className="text-gray-700 dark:text-gray-300"
                 >
                   DeepSeek
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  id="anthropic_model"
+                  name="model"
+                  value="anthropic"
+                  checked={model === "anthropic"}
+                  onChange={(e) => setModel(e.target.value as ModelType)}
+                  className="scale-125"
+                />
+                <label
+                  htmlFor="anthropic_model"
+                  className="text-gray-700 dark:text-gray-300"
+                >
+                  Claude
                 </label>
               </div>
             </div>
