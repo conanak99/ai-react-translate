@@ -25,10 +25,14 @@ async function getStreamResult(
 ): Promise<Result> {
   console.log(`Fetching content from: https://r.jina.ai/${url}`);
 
+  const jinaApiKey = import.meta.env.JINA_API_KEY;
+
   const response = await fetch(`https://r.jina.ai/${url}`, {
-    headers: {
-      Authorization: `Bearer ${import.meta.env.JINA_API_KEY}`,
-    },
+    headers: jinaApiKey
+      ? {
+          Authorization: `Bearer ${jinaApiKey}`,
+        }
+      : undefined,
   });
 
   const html = await response.text();
@@ -47,10 +51,10 @@ async function getStreamResult(
       },
       {
         role: "user",
-        content: `Here are the draft paragraphs you will be working with:
-<draft>
+        content: `Here are the original work you will be working with:
+<original>
 ${html}
-</draft>`,
+</original>`,
       },
     ],
     ...(model === "anthropic" && {
@@ -166,5 +170,7 @@ export const POST: APIRoute = async ({ request }) => {
     getStreamFromCache(nextChapterUrl, mode, ignoreCache, model);
   }
 
-  return result?.toUIMessageStreamResponse() ?? new Response(null, { status: 501 });
+  return (
+    result?.toUIMessageStreamResponse() ?? new Response(null, { status: 501 })
+  );
 };
