@@ -258,23 +258,6 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
               <div className="flex items-center gap-2">
                 <input
                   type="radio"
-                  id="nanogpt_model"
-                  name="model"
-                  value="nanogpt"
-                  checked={model === "nanogpt"}
-                  onChange={(e) => setModel(e.target.value as ModelType)}
-                  className="scale-125"
-                />
-                <label
-                  htmlFor="nanogpt_model"
-                  className="text-gray-700 dark:text-gray-300"
-                >
-                  NanoGPT (Kimi K2)
-                </label>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
                   id="deepseek_model"
                   name="model"
                   value="deepseek"
@@ -304,6 +287,23 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
                   className="text-gray-700 dark:text-gray-300"
                 >
                   Claude
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  id="nanogpt_model"
+                  name="model"
+                  value="nanogpt"
+                  checked={model === "nanogpt"}
+                  onChange={(e) => setModel(e.target.value as ModelType)}
+                  className="scale-125"
+                />
+                <label
+                  htmlFor="nanogpt_model"
+                  className="text-gray-700 dark:text-gray-300"
+                >
+                  NanoGPT (Kimi K2)
                 </label>
               </div>
             </div>
