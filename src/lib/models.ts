@@ -25,8 +25,8 @@ const openaiCompatible = createOpenAICompatible({
 
 export const anthropicModel = anthropic("claude-opus-4-5-20251101");
 
-export const googleModel = google("gemini-2.5-pro");
-// export const googleModel = google("gemini-3-pro-preview");
+// export const googleModel = google("gemini-2.5-pro");
+export const googleModel = google("gemini-3-pro-preview");
 
 export const nanogpt = openaiCompatible("moonshotai/kimi-k2-thinking-original");
 
