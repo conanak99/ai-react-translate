@@ -3,7 +3,7 @@ import { createDeepSeek } from "@ai-sdk/deepseek";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
-export type ModelType = "google" | "anthropic" | "deepseek" | "nanogpt";
+export type ModelType = "google" | "google_flash" | "anthropic" | "deepseek" | "nanogpt";
 
 const anthropic = createAnthropic({
   apiKey: import.meta.env.CLAUDE_AI_KEY,
@@ -28,6 +28,8 @@ export const anthropicModel = anthropic("claude-opus-4-5-20251101");
 // export const googleModel = google("gemini-2.5-pro");
 export const googleModel = google("gemini-3-pro-preview");
 
+export const googleFlashModel = google("gemini-3-flash-preview");
+
 export const nanogpt = openaiCompatible("moonshotai/kimi-k2-thinking-original");
 
 // Keep deepseek for potential future use
@@ -36,6 +38,7 @@ export const deepseekModel = deepseek("deepseek-reasoner");
 // Model map
 export const MODEL_MAP = {
   google: googleModel,
+  google_flash: googleFlashModel,
   nanogpt: nanogpt,
   anthropic: anthropicModel,
   deepseek: deepseekModel,

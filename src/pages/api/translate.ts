@@ -64,7 +64,7 @@ ${html}
         } satisfies AnthropicProviderOptions,
       },
     }),
-    ...(model === "google" && {
+    ...((model === "google" || model === "google_flash") && {
       providerOptions: {
         google: {
           safetySettings: [

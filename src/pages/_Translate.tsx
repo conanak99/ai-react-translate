@@ -252,7 +252,24 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
                   htmlFor="google_model"
                   className="text-gray-700 dark:text-gray-300"
                 >
-                  Gemini
+                  Gemini 3 Pro
+                </label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  id="google_flash_model"
+                  name="model"
+                  value="google_flash"
+                  checked={model === "google_flash"}
+                  onChange={(e) => setModel(e.target.value as ModelType)}
+                  className="scale-125"
+                />
+                <label
+                  htmlFor="google_flash_model"
+                  className="text-gray-700 dark:text-gray-300"
+                >
+                  Gemini 3Flash
                 </label>
               </div>
               <div className="flex items-center gap-2">
