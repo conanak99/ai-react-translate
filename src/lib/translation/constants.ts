@@ -17,24 +17,24 @@ import { getNames } from "@/pocket";
 export type Mode = "wuxia" | "fantasy" | "light_novel";
 
 async function getNamesSection(): Promise<string> {
-  const names = await getNames();
-  const hasNames = Object.keys(names).length > 0;
+	const names = await getNames();
+	const hasNames = Object.keys(names).length > 0;
 
-  return hasNames
-    ? `DIFFICULT NAMES:
+	return hasNames
+		? `DIFFICULT NAMES:
 ${Object.entries(names)
-  .map(([key, value]) => `${key}: ${value}`)
-  .join("\n")}
+	.map(([key, value]) => `${key}: ${value}`)
+	.join("\n")}
 If the name is not in the list, please translate it to English as best as you can.
 
 `
-    : "";
+		: "";
 }
 
 export async function getSystemPromptWuxia() {
-  const namesSection = await getNamesSection();
+	const namesSection = await getNamesSection();
 
-  return `You are a highly skilled translator and writer specializing in wuxia/xianxia novels.
+	return `You are a highly skilled translator and writer specializing in wuxia/xianxia novels.
 Your task is to transform original work into a polished Vietnamese wuxia/xianxia novel translation, adhering to the genre's style and conventions.
 Your goal is to create a complete, engaging translation that captures the essence of the original text while incorporating the unique elements of the wuxia/xianxia genre.
 
@@ -64,9 +64,9 @@ Now, please proceed with your translation of the original work.`;
 }
 
 export async function getSystemPromptFantasy() {
-  const namesSection = await getNamesSection();
+	const namesSection = await getNamesSection();
 
-  return `You are a highly skilled translator and writer specializing in fantasy novels.
+	return `You are a highly skilled translator and writer specializing in fantasy novels.
 Your task is to transform original Chinese script into a polished Vietnamese fantasy novel translation, adhering to the genre's style and conventions.
 Your goal is to create a complete, engaging translation that captures the essence of the original text while incorporating the unique elements of the wuxia genre.
 
@@ -95,9 +95,9 @@ Now, please proceed with your translation of the original paragraphs.`;
 }
 
 export async function getSystemPromptLN() {
-  const namesSection = await getNamesSection();
+	const namesSection = await getNamesSection();
 
-  return `You are a seasoned light novel translator specializing in all genre, renowned for your ability to capture the nuances of Japanese/English prose and adapt it for a Vietnamese-speaking audience.
+	return `You are a seasoned light novel translator specializing in all genre, renowned for your ability to capture the nuances of Japanese/English prose and adapt it for a Vietnamese-speaking audience.
 You are currently working on translating a popular light novel series making.
 Your task is to translate the provided excerpt (From English or Chinese), keeping in mind the target audience of young adult readers who enjoy light novels and anime.
 
@@ -130,9 +130,9 @@ Remember, it is crucial that you complete the entire translation without stoppin
 }
 
 export async function getPromptMap(): Promise<Record<Mode, string>> {
-  return {
-    wuxia: await getSystemPromptWuxia(),
-    fantasy: await getSystemPromptFantasy(),
-    light_novel: await getSystemPromptLN(),
-  };
+	return {
+		wuxia: await getSystemPromptWuxia(),
+		fantasy: await getSystemPromptFantasy(),
+		light_novel: await getSystemPromptLN(),
+	};
 }
