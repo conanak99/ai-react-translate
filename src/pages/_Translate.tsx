@@ -32,6 +32,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
   } = useCompletion({
     api: "/api/translate",
     initialInput: initialUrl,
+    streamProtocol: "text",
     body: {
       ignoreCache,
       mode,
