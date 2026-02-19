@@ -171,6 +171,6 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   return (
-    result?.toUIMessageStreamResponse() ?? new Response(null, { status: 501 })
+    result?.toTextStreamResponse() ?? new Response(null, { status: 501 })
   );
 };
