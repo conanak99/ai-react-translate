@@ -1,3 +1,3 @@
-import { createCache } from 'cache-manager';
+import { createCache } from "cache-manager";
 
-export const cache = createCache()
+export const cache = createCache();
