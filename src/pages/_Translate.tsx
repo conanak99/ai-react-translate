@@ -252,7 +252,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
                   htmlFor="google_model"
                   className="text-gray-700 dark:text-gray-300"
                 >
-                  Gemini 3 Pro
+                  Gemini 3.1 Pro
                 </label>
               </div>
               <div className="flex items-center gap-2">
