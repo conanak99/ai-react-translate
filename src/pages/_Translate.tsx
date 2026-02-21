@@ -1,7 +1,7 @@
 import { useCompletion } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import type { ModelType } from "@/lib/models";
+import type { ModelType, ScraperProvider } from "@/lib/models";
 
 import type { Mode } from "@/lib/translation/constants";
 import { getNextChapterUrl, getPreviousChapterUrl } from "@/lib/utils";
@@ -12,6 +12,8 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
 	const [mode, setMode] = useLocalStorage<Mode>("mode", "light_novel");
 	const [model, setModel] = useLocalStorage<ModelType>("model", "google");
+	const [scraperProvider, setScraperProvider] =
+		useLocalStorage<ScraperProvider>("scraperProvider", "jina");
 	const [ignoreCache, setIgnoreCache] = useState(false);
 
 	useEffect(() => {
@@ -37,6 +39,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 			ignoreCache,
 			mode,
 			model,
+			scraperProvider,
 		},
 	});
 
@@ -67,6 +70,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 				ignoreCache,
 				mode,
 				model,
+				scraperProvider,
 			},
 		});
 
@@ -322,6 +326,53 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									className="text-gray-700 dark:text-gray-300"
 								>
 									NanoGPT (Kimi K2)
+								</label>
+							</div>
+						</div>
+					</div>
+
+					{/* Fourth row: Scraper Provider */}
+					<div className="flex flex-col lg:flex-row lg:items-center gap-3">
+						<span className="text-gray-700 dark:text-gray-300 font-medium text-sm whitespace-nowrap">
+							Scraper:
+						</span>
+						<div className="flex flex-wrap items-center gap-4">
+							<div className="flex items-center gap-2">
+								<input
+									type="radio"
+									id="scraper_jina"
+									name="scraperProvider"
+									value="jina"
+									checked={scraperProvider === "jina"}
+									onChange={(e) =>
+										setScraperProvider(e.target.value as ScraperProvider)
+									}
+									className="scale-125"
+								/>
+								<label
+									htmlFor="scraper_jina"
+									className="text-gray-700 dark:text-gray-300"
+								>
+									Jina AI
+								</label>
+							</div>
+							<div className="flex items-center gap-2">
+								<input
+									type="radio"
+									id="scraper_firecrawl"
+									name="scraperProvider"
+									value="firecrawl"
+									checked={scraperProvider === "firecrawl"}
+									onChange={(e) =>
+										setScraperProvider(e.target.value as ScraperProvider)
+									}
+									className="scale-125"
+								/>
+								<label
+									htmlFor="scraper_firecrawl"
+									className="text-gray-700 dark:text-gray-300"
+								>
+									Firecrawl
 								</label>
 							</div>
 						</div>

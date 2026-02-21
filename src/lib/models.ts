@@ -10,6 +10,8 @@ export type ModelType =
 	| "deepseek"
 	| "nanogpt";
 
+export type ScraperProvider = "jina" | "firecrawl";
+
 const anthropic = createAnthropic({
 	apiKey: import.meta.env.CLAUDE_AI_KEY,
 });

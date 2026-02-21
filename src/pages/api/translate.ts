@@ -3,7 +3,12 @@ import type { GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
 import { streamText } from "ai";
 import type { APIRoute } from "astro";
 import delay from "delay";
-import { MODEL_MAP, MODEL_MAX_TOKENS, type ModelType } from "@/lib/models";
+import {
+	MODEL_MAP,
+	MODEL_MAX_TOKENS,
+	type ModelType,
+	type ScraperProvider,
+} from "@/lib/models";
 import { getNextChapterUrl } from "@/lib/utils";
 import { getPromptMap, type Mode } from "../../lib/translation/constants";
 
@@ -14,28 +19,72 @@ const RESULT_CACHE: Map<
 	{ status: "pending" | "success"; result?: Result }
 > = new Map();
 
-function getCacheKey(url: string, mode: Mode, model: ModelType): string {
-	return `${url}|${mode}|${model}`;
+function getCacheKey(
+	url: string,
+	mode: Mode,
+	model: ModelType,
+	scraperProvider: ScraperProvider,
+): string {
+	return `${url}|${mode}|${model}|${scraperProvider}`;
+}
+
+async function fetchWithJina(url: string): Promise<string> {
+	console.log(`Fetching content from Jina: https://r.jina.ai/${url}`);
+	const jinaApiKey = import.meta.env.JINA_API_KEY;
+
+	const response = await fetch(`https://r.jina.ai/${url}`, {
+		headers: jinaApiKey
+			? { Authorization: `Bearer ${jinaApiKey}` }
+			: undefined,
+	});
+
+	return response.text();
+}
+
+async function fetchWithFirecrawl(url: string): Promise<string> {
+	console.log(`Fetching content from Firecrawl: ${url}`);
+	const firecrawlApiKey = import.meta.env.FIRECRAWL_API_KEY;
+
+	if (!firecrawlApiKey) {
+		throw new Error("FIRECRAWL_API_KEY environment variable is not set");
+	}
+
+	const response = await fetch("https://api.firecrawl.dev/v1/scrape", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${firecrawlApiKey}`,
+		},
+		body: JSON.stringify({
+			url,
+			formats: ["markdown"],
+		}),
+	});
+
+	if (!response.ok) {
+		const errorText = await response.text();
+		throw new Error(`Firecrawl API error (${response.status}): ${errorText}`);
+	}
+
+	const json = await response.json();
+
+	if (!json.success) {
+		throw new Error(`Firecrawl scrape failed: ${JSON.stringify(json)}`);
+	}
+
+	return json.data?.markdown ?? "";
 }
 
 async function getStreamResult(
 	url: string,
 	mode: Mode,
 	model: ModelType = "google",
+	scraperProvider: ScraperProvider = "jina",
 ): Promise<Result> {
-	console.log(`Fetching content from: https://r.jina.ai/${url}`);
-
-	const jinaApiKey = import.meta.env.JINA_API_KEY;
-
-	const response = await fetch(`https://r.jina.ai/${url}`, {
-		headers: jinaApiKey
-			? {
-					Authorization: `Bearer ${jinaApiKey}`,
-				}
-			: undefined,
-	});
-
-	const html = await response.text();
+	const html =
+		scraperProvider === "firecrawl"
+			? await fetchWithFirecrawl(url)
+			: await fetchWithJina(url);
 	console.log("Content fetched successfully");
 
 	const PROMPT_MAP = await getPromptMap();
@@ -97,9 +146,10 @@ async function getStreamFromCache(
 	mode: Mode,
 	ignoreCache: boolean,
 	model: ModelType = "google",
+	scraperProvider: ScraperProvider = "jina",
 ): Promise<Result> {
-	const cacheKey = getCacheKey(url, mode, model);
-	console.log({ url, mode, model, cacheKey, ignoreCache });
+	const cacheKey = getCacheKey(url, mode, model, scraperProvider);
+	console.log({ url, mode, model, scraperProvider, cacheKey, ignoreCache });
 
 	let result: Result | undefined;
 
@@ -132,7 +182,7 @@ async function getStreamFromCache(
 	} else {
 		try {
 			RESULT_CACHE.set(cacheKey, { status: "pending" });
-			result = await getStreamResult(url, mode, model);
+			result = await getStreamResult(url, mode, model, scraperProvider);
 			RESULT_CACHE.set(cacheKey, { status: "success", result });
 		} catch (error) {
 			RESULT_CACHE.delete(cacheKey);
@@ -154,20 +204,27 @@ export const POST: APIRoute = async ({ request }) => {
 		ignoreCache,
 		mode = "wuxia",
 		model = "google",
+		scraperProvider = "jina",
 	}: {
 		prompt: string;
 		ignoreCache: boolean;
 		mode: Mode;
 		model: ModelType;
+		scraperProvider: ScraperProvider;
 	} = await request.json();
 	const url = prompt;
 
-	const result = await getStreamFromCache(url, mode, ignoreCache, model);
+	const result = await getStreamFromCache(
+		url,
+		mode,
+		ignoreCache,
+		model,
+		scraperProvider,
+	);
 
 	if (!ignoreCache) {
-		// Just call it to prefetch next chapter
 		const nextChapterUrl = getNextChapterUrl(url);
-		getStreamFromCache(nextChapterUrl, mode, ignoreCache, model);
+		getStreamFromCache(nextChapterUrl, mode, ignoreCache, model, scraperProvider);
 	}
 
 	return result?.toTextStreamResponse() ?? new Response(null, { status: 501 });
