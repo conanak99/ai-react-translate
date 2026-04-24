@@ -5,9 +5,7 @@ async function fetchWithJina(url: string): Promise<string> {
 	const jinaApiKey = import.meta.env.JINA_API_KEY;
 
 	const response = await fetch(`https://r.jina.ai/${url}`, {
-		headers: jinaApiKey
-			? { Authorization: `Bearer ${jinaApiKey}` }
-			: undefined,
+		headers: jinaApiKey ? { Authorization: `Bearer ${jinaApiKey}` } : undefined,
 	});
 
 	return response.text();

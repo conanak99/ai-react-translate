@@ -3,6 +3,7 @@ import "@/styles/global.css";
 
 import { getLatestLinks } from "../pocket";
 
+// biome-ignore lint/correctness/noUnusedVariables: Astro template consumes this value.
 const latestLinks = await getLatestLinks();
 ---
 

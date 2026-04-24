@@ -174,7 +174,13 @@ export const POST: APIRoute = async ({ request }) => {
 
 	if (!ignoreCache) {
 		const nextChapterUrl = getNextChapterUrl(url);
-		getStreamFromCache(nextChapterUrl, mode, ignoreCache, model, scraperProvider);
+		getStreamFromCache(
+			nextChapterUrl,
+			mode,
+			ignoreCache,
+			model,
+			scraperProvider,
+		);
 	}
 
 	return result?.toTextStreamResponse() ?? new Response(null, { status: 501 });

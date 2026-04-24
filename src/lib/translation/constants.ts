@@ -1,4 +1,3 @@
-import { cache } from "@/lib/cache";
 import { getNames } from "@/pocket";
 
 // const getNamesCached = async () => {

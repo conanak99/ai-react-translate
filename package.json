@@ -9,6 +9,8 @@
 		"dev": "astro dev",
 		"start": "astro dev",
 		"build": "astro check && astro build",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write --unsafe .",
 		"preview": "astro preview",
 		"test": "vitest",
 		"astro": "astro"

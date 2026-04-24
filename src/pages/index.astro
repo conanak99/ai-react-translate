@@ -2,9 +2,10 @@
 import "@/styles/global.css";
 
 import { getTranslateUrl } from "../pocket";
-// import Chat from "./_Chat";
+// biome-ignore lint/correctness/noUnusedImports: Astro template references this component.
 import Translate from "./_Translate";
 
+// biome-ignore lint/correctness/noUnusedVariables: Astro template reads this value.
 const initialUrl = await getTranslateUrl();
 ---
 
