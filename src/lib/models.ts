@@ -39,8 +39,9 @@ export const googleFlashModel = google("gemini-3.1-flash-lite-preview");
 
 export const nanogpt = openaiCompatible("moonshotai/kimi-k2-thinking-original");
 
-// Keep deepseek for potential future use
-export const deepseekModel = deepseek("deepseek-reasoner");
+// Keep the persisted "deepseek" option stable while targeting DeepSeek's
+// current recommended production model.
+export const deepseekModel = deepseek("deepseek-v4-pro");
 
 // Model map
 export const MODEL_MAP = {

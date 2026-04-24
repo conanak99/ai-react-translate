@@ -291,7 +291,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									htmlFor="deepseek_model"
 									className="text-gray-700 dark:text-gray-300"
 								>
-									DeepSeek
+									DeepSeek V4 Pro
 								</label>
 							</div>
 							<div className="flex items-center gap-2">
