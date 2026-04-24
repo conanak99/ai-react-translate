@@ -2,10 +2,8 @@
 import "@/styles/global.css";
 
 import { getTranslateUrl } from "../pocket";
-// biome-ignore lint/correctness/noUnusedImports: Astro template references this component.
 import Translate from "./_Translate";
 
-// biome-ignore lint/correctness/noUnusedVariables: Astro template reads this value.
 const initialUrl = await getTranslateUrl();
 ---
 
@@ -21,6 +19,7 @@ const initialUrl = await getTranslateUrl();
     <!-- <Chat client:load /> -->
     <Translate initialUrl={initialUrl} client:only="react" />
     <button
+      type="button"
       id="scrollToTop"
       class="fixed bottom-4 right-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 hover:scale-110 hover:shadow-xl transition-all duration-300 opacity-0 invisible"
       onclick="window.scrollTo({top: 0, behavior: 'smooth'})"

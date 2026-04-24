@@ -3,7 +3,6 @@ import "@/styles/global.css";
 
 import { getLatestLinks } from "../pocket";
 
-// biome-ignore lint/correctness/noUnusedVariables: Astro template consumes this value.
 const latestLinks = await getLatestLinks();
 ---
 
@@ -21,7 +20,9 @@ const latestLinks = await getLatestLinks();
         <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">History</h1>
         <div class="space-y-4">
           {latestLinks.map((item) => (
-            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div
+              class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+            >
               <a
                 href={item.link}
                 class="text-blue-600 dark:text-blue-400 hover:underline mr-4 break-all"
@@ -29,6 +30,7 @@ const latestLinks = await getLatestLinks();
                 {item.link}
               </a>
               <button
+                type="button"
                 class="copy-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors shrink-0"
                 data-link={item.link}
               >
