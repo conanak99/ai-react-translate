@@ -109,24 +109,23 @@ async function getContinuationStreamResult(
 		messages: [
 			{
 				role: "system",
-				content: `${PROMPT_MAP[mode]}
-
-The previous response was cut off. Continue the same translation from exactly where it stopped.
-Return only the missing continuation text. Do not repeat any text that already appears in the existing translation, and do not add explanations or notes.`,
+				content: PROMPT_MAP[mode],
 			},
 			{
 				role: "user",
 				content: `Here are the original work you will be working with:
 <original>
 ${html}
-</original>
-
-Here is the existing translation that was cut off:
-<existing_translation>
-${continueFrom}
-</existing_translation>
-
-Continue the translation from exactly after the existing translation above.`,
+</original>`,
+			},
+			{
+				role: "assistant",
+				content: continueFrom,
+			},
+			{
+				role: "user",
+				content:
+					"Your previous translation was cut off. Continue from exactly where it stopped. Return only the missing continuation text, without repeating any text already shown and without adding explanations or notes.",
 			},
 		],
 		...(model === "anthropic" && {
