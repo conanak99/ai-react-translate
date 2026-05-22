@@ -49,6 +49,11 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	console.error({ error });
 
 	const displayedCompletion = `${continuedCompletionPrefix}${completion}`;
+	const trimmedCompletion = displayedCompletion.trim();
+	const canContinueTranslation =
+		!isLoading &&
+		trimmedCompletion.length > 0 &&
+		!trimmedCompletion.endsWith("</translation>");
 
 	// useEffect(() => {
 	//   if (input) {
@@ -87,7 +92,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	function continueTranslation() {
 		const currentCompletion = displayedCompletion;
 
-		if (isLoading || !currentCompletion.trim()) {
+		if (!canContinueTranslation) {
 			return;
 		}
 
@@ -454,14 +459,15 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 					>
 						Previous Chapter
 					</button>
-					<button
-						type="button"
-						className="bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition disabled:cursor-not-allowed disabled:opacity-50"
-						onClick={continueTranslation}
-						disabled={isLoading || !displayedCompletion.trim()}
-					>
-						Continue
-					</button>
+					{canContinueTranslation && (
+						<button
+							type="button"
+							className="bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition"
+							onClick={continueTranslation}
+						>
+							Continue
+						</button>
+					)}
 					<button
 						type="button"
 						className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
