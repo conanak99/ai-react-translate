@@ -15,6 +15,8 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	const [scraperProvider, setScraperProvider] =
 		useLocalStorage<ScraperProvider>("scraperProvider", "jina");
 	const [ignoreCache, setIgnoreCache] = useState(false);
+	const [continuedCompletionPrefix, setContinuedCompletionPrefix] =
+		useState("");
 
 	useEffect(() => {
 		// Update dark mode class on html element
@@ -27,6 +29,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 		error,
 		complete,
 		input,
+		setCompletion,
 		setInput,
 		handleInputChange,
 		handleSubmit,
@@ -45,6 +48,13 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 
 	console.error({ error });
 
+	const displayedCompletion = `${continuedCompletionPrefix}${completion}`;
+	const trimmedCompletion = displayedCompletion.trim();
+	const canContinueTranslation =
+		!isLoading &&
+		trimmedCompletion.length > 0 &&
+		!trimmedCompletion.endsWith("</translation>");
+
 	// useEffect(() => {
 	//   if (input) {
 	//     setTranslateUrl(input);
@@ -54,6 +64,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 
 	async function goToChapter(direction: "next" | "previous") {
 		stop();
+		setContinuedCompletionPrefix("");
 
 		// Replace chapter number in url
 		const newUrl =
@@ -76,6 +87,26 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 
 		// Scroll to top of the page
 		window.scrollTo({ top: 0, behavior: "smooth" });
+	}
+
+	function continueTranslation() {
+		const currentCompletion = displayedCompletion;
+
+		if (!canContinueTranslation) {
+			return;
+		}
+
+		setContinuedCompletionPrefix(currentCompletion);
+		setCompletion("");
+		complete(input, {
+			body: {
+				ignoreCache: true,
+				mode,
+				model,
+				scraperProvider,
+				continueFrom: currentCompletion,
+			},
+		});
 	}
 
 	const fontSizeClasses = [
@@ -102,7 +133,13 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	return (
 		<div className="w-full lg:max-w-6xl mx-auto p-4 min-h-screen bg-gray-100 dark:bg-gray-900">
 			<div className="bg-white dark:bg-gray-800 rounded-lg shadow flex flex-col h-full">
-				<form onSubmit={handleSubmit} className="p-4">
+				<form
+					onSubmit={(event) => {
+						setContinuedCompletionPrefix("");
+						handleSubmit(event);
+					}}
+					className="p-4"
+				>
 					<div className="flex gap-2">
 						<textarea
 							rows={3}
@@ -384,7 +421,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 				>
 					{error && <div className="text-red-500">{error.message}</div>}
 					<div className="w-full break-words whitespace-pre-line rounded-lg">
-						{completion}
+						{displayedCompletion}
 					</div>
 					{isLoading && (
 						<div className="flex justify-center">
@@ -422,6 +459,15 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 					>
 						Previous Chapter
 					</button>
+					{canContinueTranslation && (
+						<button
+							type="button"
+							className="bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition"
+							onClick={continueTranslation}
+						>
+							Continue
+						</button>
+					)}
 					<button
 						type="button"
 						className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
