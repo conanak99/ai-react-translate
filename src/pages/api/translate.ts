@@ -91,6 +91,79 @@ ${html}
 	return result;
 }
 
+async function getContinuationStreamResult(
+	url: string,
+	mode: Mode,
+	model: ModelType = "google",
+	scraperProvider: ScraperProvider = "jina",
+	continueFrom: string,
+): Promise<Result> {
+	const html = await crawl(url, scraperProvider);
+
+	const PROMPT_MAP = await getPromptMap();
+
+	console.time("continueStreamText");
+	const result = streamText({
+		model: MODEL_MAP[model],
+		maxOutputTokens: MODEL_MAX_TOKENS[model],
+		messages: [
+			{
+				role: "system",
+				content: `${PROMPT_MAP[mode]}
+
+The previous response was cut off. Continue the same translation from exactly where it stopped.
+Return only the missing continuation text. Do not repeat any text that already appears in the existing translation, and do not add explanations or notes.`,
+			},
+			{
+				role: "user",
+				content: `Here are the original work you will be working with:
+<original>
+${html}
+</original>
+
+Here is the existing translation that was cut off:
+<existing_translation>
+${continueFrom}
+</existing_translation>
+
+Continue the translation from exactly after the existing translation above.`,
+			},
+		],
+		...(model === "anthropic" && {
+			providerOptions: {
+				anthropic: {
+					thinking: { type: "enabled", budgetTokens: 2048 },
+				} satisfies AnthropicProviderOptions,
+			},
+		}),
+		...((model === "google" || model === "google_flash") && {
+			providerOptions: {
+				google: {
+					safetySettings: [
+						{ category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+						{
+							category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+							threshold: "BLOCK_NONE",
+						},
+						{ category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+						{
+							category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+							threshold: "BLOCK_NONE",
+						},
+						{
+							category: "HARM_CATEGORY_CIVIC_INTEGRITY",
+							threshold: "BLOCK_NONE",
+						},
+					],
+				} satisfies GoogleGenerativeAIProviderOptions,
+			},
+		}),
+	});
+	console.timeEnd("continueStreamText");
+
+	return result;
+}
+
 async function getStreamFromCache(
 	url: string,
 	mode: Mode,
@@ -155,14 +228,30 @@ export const POST: APIRoute = async ({ request }) => {
 		mode = "wuxia",
 		model = "google",
 		scraperProvider = "jina",
+		continueFrom,
 	}: {
 		prompt: string;
 		ignoreCache: boolean;
 		mode: Mode;
 		model: ModelType;
 		scraperProvider: ScraperProvider;
+		continueFrom?: string;
 	} = await request.json();
 	const url = prompt;
+
+	if (continueFrom?.trim()) {
+		const result = await getContinuationStreamResult(
+			url,
+			mode,
+			model,
+			scraperProvider,
+			continueFrom,
+		);
+
+		return (
+			result?.toTextStreamResponse() ?? new Response(null, { status: 501 })
+		);
+	}
 
 	const result = await getStreamFromCache(
 		url,
