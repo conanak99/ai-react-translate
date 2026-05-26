@@ -37,7 +37,7 @@ export const googleModel = google("gemini-3.1-pro-preview");
 
 export const googleFlashModel = google("gemini-3.5-flash");
 
-export const nanogpt = openaiCompatible("moonshotai/kimi-k2-thinking-original");
+export const qwenMaxThinkingModel = openaiCompatible("qwen3.7-max:thinking");
 
 // Keep the persisted "deepseek" option stable while targeting DeepSeek's
 // current recommended production model.
@@ -47,7 +47,7 @@ export const deepseekModel = deepseek("deepseek-v4-pro");
 export const MODEL_MAP = {
 	google: googleModel,
 	google_flash: googleFlashModel,
-	nanogpt: nanogpt,
+	nanogpt: qwenMaxThinkingModel,
 	anthropic: anthropicModel,
 	deepseek: deepseekModel,
 } as const;
