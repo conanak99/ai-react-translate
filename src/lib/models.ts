@@ -54,5 +54,5 @@ export const MODEL_MAP = {
 
 export const MODEL_MAX_TOKENS: Partial<Record<ModelType, number>> = {
 	anthropic: 32000,
-	deepseek: 8192,
+	deepseek: 32000,
 };
