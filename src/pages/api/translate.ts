@@ -59,7 +59,7 @@ ${html}
 		...(model === "anthropic" && {
 			providerOptions: {
 				anthropic: {
-					thinking: { type: "enabled", budgetTokens: 2048 },
+					thinking: { type: "enabled", budgetTokens: 4096 },
 				} satisfies AnthropicProviderOptions,
 			},
 		}),
@@ -131,7 +131,7 @@ ${html}
 		...(model === "anthropic" && {
 			providerOptions: {
 				anthropic: {
-					thinking: { type: "enabled", budgetTokens: 2048 },
+					thinking: { type: "enabled", budgetTokens: 4096 },
 				} satisfies AnthropicProviderOptions,
 			},
 		}),
