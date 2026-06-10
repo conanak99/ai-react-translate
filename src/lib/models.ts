@@ -30,7 +30,7 @@ const openaiCompatible = createOpenAICompatible({
 	baseURL: "https://nano-gpt.com/api/v1",
 });
 
-export const anthropicModel = anthropic("claude-opus-4-5-20251101");
+export const anthropicModel = anthropic("claude-fable-5");
 
 // export const googleModel = google("gemini-2.5-pro");
 export const googleModel = google("gemini-3.1-pro-preview");
@@ -53,6 +53,6 @@ export const MODEL_MAP = {
 } as const;
 
 export const MODEL_MAX_TOKENS: Partial<Record<ModelType, number>> = {
-	anthropic: 32000,
+	anthropic: 128000,
 	deepseek: 32000,
 };
