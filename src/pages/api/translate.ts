@@ -1,4 +1,3 @@
-import type { AnthropicProviderOptions } from "@ai-sdk/anthropic";
 import type { GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
 import { streamText } from "ai";
 import type { APIRoute } from "astro";
@@ -56,13 +55,6 @@ ${html}
 </original>`,
 			},
 		],
-		...(model === "anthropic" && {
-			providerOptions: {
-				anthropic: {
-					thinking: { type: "enabled", budgetTokens: 4096 },
-				} satisfies AnthropicProviderOptions,
-			},
-		}),
 		...((model === "google" || model === "google_flash") && {
 			providerOptions: {
 				google: {
@@ -128,13 +120,6 @@ ${html}
 					"Your previous translation was cut off. Continue from exactly where it stopped. Return only the missing continuation text, without repeating any text already shown and without adding explanations or notes.",
 			},
 		],
-		...(model === "anthropic" && {
-			providerOptions: {
-				anthropic: {
-					thinking: { type: "enabled", budgetTokens: 4096 },
-				} satisfies AnthropicProviderOptions,
-			},
-		}),
 		...((model === "google" || model === "google_flash") && {
 			providerOptions: {
 				google: {
