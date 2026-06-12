@@ -362,7 +362,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									htmlFor="nanogpt_model"
 									className="text-gray-700 dark:text-gray-300"
 								>
-									Qwen 3.7 Max Thinking
+									Mimo V2.5 Pro
 								</label>
 							</div>
 						</div>
