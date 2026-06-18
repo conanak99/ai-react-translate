@@ -365,6 +365,23 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									Mimo V2.5 Pro
 								</label>
 							</div>
+							<div className="flex items-center gap-2">
+								<input
+									type="radio"
+									id="glm_model"
+									name="model"
+									value="glm"
+									checked={model === "glm"}
+									onChange={(e) => setModel(e.target.value as ModelType)}
+									className="scale-125"
+								/>
+								<label
+									htmlFor="glm_model"
+									className="text-gray-700 dark:text-gray-300"
+								>
+									GLM 5.2
+								</label>
+							</div>
 						</div>
 					</div>
 

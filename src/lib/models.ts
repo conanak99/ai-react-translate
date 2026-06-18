@@ -8,7 +8,8 @@ export type ModelType =
 	| "google_flash"
 	| "anthropic"
 	| "deepseek"
-	| "nanogpt";
+	| "nanogpt"
+	| "glm";
 
 export type ScraperProvider = "jina" | "firecrawl";
 
@@ -41,6 +42,8 @@ export const mimoThinkingModel = openaiCompatible(
 	"xiaomi/mimo-v2.5-pro:thinking",
 );
 
+export const glmModel = openaiCompatible("zai-org/glm-5.2");
+
 // Keep the persisted "deepseek" option stable while targeting DeepSeek's
 // current recommended production model.
 export const deepseekModel = deepseek("deepseek-v4-pro");
@@ -50,6 +53,7 @@ export const MODEL_MAP = {
 	google: googleModel,
 	google_flash: googleFlashModel,
 	nanogpt: mimoThinkingModel,
+	glm: glmModel,
 	anthropic: anthropicModel,
 	deepseek: deepseekModel,
 } as const;
