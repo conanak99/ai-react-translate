@@ -3,8 +3,7 @@ import { createDeepSeek } from "@ai-sdk/deepseek";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
-export const NANO_GPT_MIMO_THINKING_SUBMODEL =
-	"xiaomi/mimo-v2.5-pro:thinking";
+export const NANO_GPT_MIMO_THINKING_SUBMODEL = "xiaomi/mimo-v2.5-pro:thinking";
 export const NANO_GPT_GLM_SUBMODEL = "zai-org/glm-5.2";
 export const NANO_GPT_MIMO_THINKING_MODEL_TYPE =
 	`nanogpt|${NANO_GPT_MIMO_THINKING_SUBMODEL}` as const;

@@ -2,11 +2,11 @@ import { useCompletion } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import {
+	type LegacyModelType,
+	type ModelType,
 	NANO_GPT_GLM_MODEL_TYPE,
 	NANO_GPT_MIMO_THINKING_MODEL_TYPE,
 	normalizeModelType,
-	type LegacyModelType,
-	type ModelType,
 	type ScraperProvider,
 } from "@/lib/models";
 
