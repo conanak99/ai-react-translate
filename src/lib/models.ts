@@ -32,7 +32,7 @@ const google = createGoogleGenerativeAI({
 	apiKey: import.meta.env.GOOGLE_GENERATIVE_AI_KEY,
 });
 
-const openaiCompatible = createOpenAICompatible({
+const nanoGptOpenAICompatible = createOpenAICompatible({
 	name: "nano-gpt",
 	apiKey: import.meta.env.NANO_GPT_API_KEY,
 	baseURL: "https://nano-gpt.com/api/v1",
@@ -45,11 +45,11 @@ export const googleModel = google("gemini-3.1-pro-preview");
 
 export const googleFlashModel = google("gemini-3.5-flash");
 
-export const mimoThinkingModel = openaiCompatible(
+export const mimoThinkingModel = nanoGptOpenAICompatible(
 	NANO_GPT_MIMO_THINKING_SUBMODEL,
 );
 
-export const glmModel = openaiCompatible(NANO_GPT_GLM_SUBMODEL);
+export const glmModel = nanoGptOpenAICompatible(NANO_GPT_GLM_SUBMODEL);
 
 // Keep the persisted "deepseek" option stable while targeting DeepSeek's
 // current recommended production model.
