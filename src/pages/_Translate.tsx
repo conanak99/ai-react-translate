@@ -2,11 +2,9 @@ import { useCompletion } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import {
-	type LegacyModelType,
 	type ModelType,
 	NANO_GPT_GLM_MODEL_TYPE,
 	NANO_GPT_MIMO_THINKING_MODEL_TYPE,
-	normalizeModelType,
 	type ScraperProvider,
 } from "@/lib/models";
 
@@ -18,24 +16,17 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
 	const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
 	const [mode, setMode] = useLocalStorage<Mode>("mode", "light_novel");
-	const [model, setModel] = useLocalStorage<LegacyModelType>("model", "google");
+	const [model, setModel] = useLocalStorage<ModelType>("model", "google");
 	const [scraperProvider, setScraperProvider] =
 		useLocalStorage<ScraperProvider>("scraperProvider", "jina");
 	const [ignoreCache, setIgnoreCache] = useState(false);
 	const [continuedCompletionPrefix, setContinuedCompletionPrefix] =
 		useState("");
-	const selectedModel = normalizeModelType(model);
 
 	useEffect(() => {
 		// Update dark mode class on html element
 		document.documentElement.classList.toggle("dark", isDarkMode);
 	}, [isDarkMode]);
-
-	useEffect(() => {
-		if (selectedModel !== model) {
-			setModel(selectedModel);
-		}
-	}, [model, selectedModel, setModel]);
 
 	const {
 		completion,
@@ -55,7 +46,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 		body: {
 			ignoreCache,
 			mode,
-			model: selectedModel,
+			model,
 			scraperProvider,
 		},
 	});
@@ -94,7 +85,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 			body: {
 				ignoreCache,
 				mode,
-				model: selectedModel,
+				model,
 				scraperProvider,
 			},
 		});
@@ -116,7 +107,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 			body: {
 				ignoreCache: true,
 				mode,
-				model: selectedModel,
+				model,
 				scraperProvider,
 				continueFrom: currentCompletion,
 			},
@@ -300,7 +291,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									id="google_model"
 									name="model"
 									value="google"
-									checked={selectedModel === "google"}
+									checked={model === "google"}
 									onChange={(e) => setModel(e.target.value as ModelType)}
 									className="scale-125"
 								/>
@@ -317,7 +308,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									id="google_flash_model"
 									name="model"
 									value="google_flash"
-									checked={selectedModel === "google_flash"}
+									checked={model === "google_flash"}
 									onChange={(e) => setModel(e.target.value as ModelType)}
 									className="scale-125"
 								/>
@@ -334,7 +325,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									id="deepseek_model"
 									name="model"
 									value="deepseek"
-									checked={selectedModel === "deepseek"}
+									checked={model === "deepseek"}
 									onChange={(e) => setModel(e.target.value as ModelType)}
 									className="scale-125"
 								/>
@@ -351,7 +342,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									id="anthropic_model"
 									name="model"
 									value="anthropic"
-									checked={selectedModel === "anthropic"}
+									checked={model === "anthropic"}
 									onChange={(e) => setModel(e.target.value as ModelType)}
 									className="scale-125"
 								/>
@@ -368,7 +359,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									id="nanogpt_model"
 									name="model"
 									value={NANO_GPT_MIMO_THINKING_MODEL_TYPE}
-									checked={selectedModel === NANO_GPT_MIMO_THINKING_MODEL_TYPE}
+									checked={model === NANO_GPT_MIMO_THINKING_MODEL_TYPE}
 									onChange={(e) => setModel(e.target.value as ModelType)}
 									className="scale-125"
 								/>
@@ -385,7 +376,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									id="glm_model"
 									name="model"
 									value={NANO_GPT_GLM_MODEL_TYPE}
-									checked={selectedModel === NANO_GPT_GLM_MODEL_TYPE}
+									checked={model === NANO_GPT_GLM_MODEL_TYPE}
 									onChange={(e) => setModel(e.target.value as ModelType)}
 									className="scale-125"
 								/>

@@ -18,8 +18,6 @@ export type ModelType =
 	| typeof NANO_GPT_MIMO_THINKING_MODEL_TYPE
 	| typeof NANO_GPT_GLM_MODEL_TYPE;
 
-export type LegacyModelType = ModelType | "nanogpt" | "glm";
-
 export type ScraperProvider = "jina" | "firecrawl";
 
 const anthropic = createAnthropic({
@@ -71,15 +69,3 @@ export const MODEL_MAX_TOKENS: Partial<Record<ModelType, number>> = {
 	anthropic: 128000,
 	deepseek: 32000,
 };
-
-export function normalizeModelType(model: LegacyModelType): ModelType {
-	if (model === "nanogpt") {
-		return NANO_GPT_MIMO_THINKING_MODEL_TYPE;
-	}
-
-	if (model === "glm") {
-		return NANO_GPT_GLM_MODEL_TYPE;
-	}
-
-	return model;
-}
