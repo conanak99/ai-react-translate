@@ -3,13 +3,23 @@ import { createDeepSeek } from "@ai-sdk/deepseek";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
+export const NANO_GPT_MIMO_THINKING_SUBMODEL =
+	"xiaomi/mimo-v2.5-pro:thinking";
+export const NANO_GPT_GLM_SUBMODEL = "zai-org/glm-5.2";
+export const NANO_GPT_MIMO_THINKING_MODEL_TYPE =
+	`nanogpt|${NANO_GPT_MIMO_THINKING_SUBMODEL}` as const;
+export const NANO_GPT_GLM_MODEL_TYPE =
+	`nanogpt|${NANO_GPT_GLM_SUBMODEL}` as const;
+
 export type ModelType =
 	| "google"
 	| "google_flash"
 	| "anthropic"
 	| "deepseek"
-	| "nanogpt"
-	| "glm";
+	| typeof NANO_GPT_MIMO_THINKING_MODEL_TYPE
+	| typeof NANO_GPT_GLM_MODEL_TYPE;
+
+export type LegacyModelType = ModelType | "nanogpt" | "glm";
 
 export type ScraperProvider = "jina" | "firecrawl";
 
@@ -39,10 +49,10 @@ export const googleModel = google("gemini-3.1-pro-preview");
 export const googleFlashModel = google("gemini-3.5-flash");
 
 export const mimoThinkingModel = openaiCompatible(
-	"xiaomi/mimo-v2.5-pro:thinking",
+	NANO_GPT_MIMO_THINKING_SUBMODEL,
 );
 
-export const glmModel = openaiCompatible("zai-org/glm-5.2");
+export const glmModel = openaiCompatible(NANO_GPT_GLM_SUBMODEL);
 
 // Keep the persisted "deepseek" option stable while targeting DeepSeek's
 // current recommended production model.
@@ -52,8 +62,8 @@ export const deepseekModel = deepseek("deepseek-v4-pro");
 export const MODEL_MAP = {
 	google: googleModel,
 	google_flash: googleFlashModel,
-	nanogpt: mimoThinkingModel,
-	glm: glmModel,
+	[NANO_GPT_MIMO_THINKING_MODEL_TYPE]: mimoThinkingModel,
+	[NANO_GPT_GLM_MODEL_TYPE]: glmModel,
 	anthropic: anthropicModel,
 	deepseek: deepseekModel,
 } as const;
@@ -62,3 +72,15 @@ export const MODEL_MAX_TOKENS: Partial<Record<ModelType, number>> = {
 	anthropic: 128000,
 	deepseek: 32000,
 };
+
+export function normalizeModelType(model: LegacyModelType): ModelType {
+	if (model === "nanogpt") {
+		return NANO_GPT_MIMO_THINKING_MODEL_TYPE;
+	}
+
+	if (model === "glm") {
+		return NANO_GPT_GLM_MODEL_TYPE;
+	}
+
+	return model;
+}

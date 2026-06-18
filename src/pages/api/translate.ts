@@ -4,9 +4,11 @@ import type { APIRoute } from "astro";
 import delay from "delay";
 import { crawl } from "@/lib/crawler";
 import {
+	type LegacyModelType,
 	MODEL_MAP,
 	MODEL_MAX_TOKENS,
 	type ModelType,
+	normalizeModelType,
 	type ScraperProvider,
 } from "@/lib/models";
 import { getNextChapterUrl } from "@/lib/utils";
@@ -217,17 +219,18 @@ export const POST: APIRoute = async ({ request }) => {
 		prompt: string;
 		ignoreCache: boolean;
 		mode: Mode;
-		model: ModelType;
+		model: LegacyModelType;
 		scraperProvider: ScraperProvider;
 		continueFrom?: string;
 	} = await request.json();
 	const url = prompt;
+	const normalizedModel = normalizeModelType(model);
 
 	if (continueFrom?.trim()) {
 		const result = await getContinuationStreamResult(
 			url,
 			mode,
-			model,
+			normalizedModel,
 			scraperProvider,
 			continueFrom,
 		);
@@ -241,7 +244,7 @@ export const POST: APIRoute = async ({ request }) => {
 		url,
 		mode,
 		ignoreCache,
-		model,
+		normalizedModel,
 		scraperProvider,
 	);
 
@@ -251,7 +254,7 @@ export const POST: APIRoute = async ({ request }) => {
 			nextChapterUrl,
 			mode,
 			ignoreCache,
-			model,
+			normalizedModel,
 			scraperProvider,
 		);
 	}
