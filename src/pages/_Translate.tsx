@@ -1,7 +1,12 @@
 import { useCompletion } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import type { ModelType, ScraperProvider } from "@/lib/models";
+import {
+	type ModelType,
+	NANO_GPT_GLM_MODEL_TYPE,
+	NANO_GPT_MIMO_THINKING_MODEL_TYPE,
+	type ScraperProvider,
+} from "@/lib/models";
 
 import type { Mode } from "@/lib/translation/constants";
 import { getNextChapterUrl, getPreviousChapterUrl } from "@/lib/utils";
@@ -353,8 +358,8 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									type="radio"
 									id="nanogpt_model"
 									name="model"
-									value="nanogpt"
-									checked={model === "nanogpt"}
+									value={NANO_GPT_MIMO_THINKING_MODEL_TYPE}
+									checked={model === NANO_GPT_MIMO_THINKING_MODEL_TYPE}
 									onChange={(e) => setModel(e.target.value as ModelType)}
 									className="scale-125"
 								/>
@@ -363,6 +368,23 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									className="text-gray-700 dark:text-gray-300"
 								>
 									Mimo V2.5 Pro
+								</label>
+							</div>
+							<div className="flex items-center gap-2">
+								<input
+									type="radio"
+									id="glm_model"
+									name="model"
+									value={NANO_GPT_GLM_MODEL_TYPE}
+									checked={model === NANO_GPT_GLM_MODEL_TYPE}
+									onChange={(e) => setModel(e.target.value as ModelType)}
+									className="scale-125"
+								/>
+								<label
+									htmlFor="glm_model"
+									className="text-gray-700 dark:text-gray-300"
+								>
+									GLM 5.2
 								</label>
 							</div>
 						</div>
