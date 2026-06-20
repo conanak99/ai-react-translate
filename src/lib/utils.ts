@@ -42,7 +42,10 @@ export function getPreviousChapterUrl(inputURL: string) {
 	return newUrl;
 }
 
-function formatChapterNumber(chapterNumber: number, previousChapterNumber?: string) {
+function formatChapterNumber(
+	chapterNumber: number,
+	previousChapterNumber?: string,
+) {
 	const nextChapterNumber = chapterNumber.toString();
 
 	if (chapterNumber < 0 || !previousChapterNumber) {
