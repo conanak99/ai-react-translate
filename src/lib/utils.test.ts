@@ -18,6 +18,10 @@ test("getNextChapterUrl should increment chapter number correctly", () => {
 			input: "https://www.bq01.cc/index/38697/86.html",
 			expected: "https://www.bq01.cc/index/38697/87.html",
 		},
+		{
+			input: "https://example.com/chapter-001.html",
+			expected: "https://example.com/chapter-002.html",
+		},
 	];
 	for (const { input, expected } of testUrls) {
 		expect(getNextChapterUrl(input)).toBe(expected);
@@ -39,6 +43,10 @@ test("getPreviousChapterUrl should decrement chapter number correctly", () => {
 		{
 			input: "https://www.bq01.cc/index/38697/86.html",
 			expected: "https://www.bq01.cc/index/38697/85.html",
+		},
+		{
+			input: "https://example.com/chapter-002.html",
+			expected: "https://example.com/chapter-001.html",
 		},
 	];
 	for (const { input, expected } of testUrls) {
