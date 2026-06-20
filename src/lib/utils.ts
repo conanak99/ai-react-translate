@@ -11,10 +11,14 @@ export function getNextChapterUrl(inputURL: string) {
 
 	// Change chapter number by change value
 	const newChapterNumber = Number(chapterNumber) + 1;
+	const formattedChapterNumber = formatChapterNumber(
+		newChapterNumber,
+		chapterNumber,
+	);
 
 	const newUrl = inputURL.replace(
 		new RegExp(`${chapterNumber}(?=[^\\d]*$)`),
-		newChapterNumber.toString(),
+		formattedChapterNumber,
 	);
 	return newUrl;
 }
@@ -25,11 +29,28 @@ export function getPreviousChapterUrl(inputURL: string) {
 
 	// Change chapter number by change value
 	const newChapterNumber = Number(chapterNumber) - 1;
+	const formattedChapterNumber = formatChapterNumber(
+		newChapterNumber,
+		chapterNumber,
+	);
 
 	// Replace chapter number in url
 	const newUrl = inputURL.replace(
 		new RegExp(`${chapterNumber}(?=[^\\d]*$)`),
-		newChapterNumber.toString(),
+		formattedChapterNumber,
 	);
 	return newUrl;
+}
+
+function formatChapterNumber(
+	chapterNumber: number,
+	previousChapterNumber?: string,
+) {
+	const nextChapterNumber = chapterNumber.toString();
+
+	if (chapterNumber < 0 || !previousChapterNumber) {
+		return nextChapterNumber;
+	}
+
+	return nextChapterNumber.padStart(previousChapterNumber.length, "0");
 }
