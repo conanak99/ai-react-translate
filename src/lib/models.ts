@@ -5,10 +5,13 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 export const NANO_GPT_MIMO_THINKING_SUBMODEL = "xiaomi/mimo-v2.5-pro:thinking";
 export const NANO_GPT_GLM_SUBMODEL = "zai-org/glm-5.2";
+export const NANO_GPT_GEMINI_FLASH_SUBMODEL = "google/gemini-3.5-flash";
 export const NANO_GPT_MIMO_THINKING_MODEL_TYPE =
 	`nanogpt|${NANO_GPT_MIMO_THINKING_SUBMODEL}` as const;
 export const NANO_GPT_GLM_MODEL_TYPE =
 	`nanogpt|${NANO_GPT_GLM_SUBMODEL}` as const;
+export const NANO_GPT_GEMINI_FLASH_MODEL_TYPE =
+	`nanogpt|${NANO_GPT_GEMINI_FLASH_SUBMODEL}` as const;
 
 export type ModelType =
 	| "google"
@@ -16,7 +19,8 @@ export type ModelType =
 	| "anthropic"
 	| "deepseek"
 	| typeof NANO_GPT_MIMO_THINKING_MODEL_TYPE
-	| typeof NANO_GPT_GLM_MODEL_TYPE;
+	| typeof NANO_GPT_GLM_MODEL_TYPE
+	| typeof NANO_GPT_GEMINI_FLASH_MODEL_TYPE;
 
 export type ScraperProvider = "jina" | "firecrawl";
 
@@ -51,6 +55,10 @@ export const mimoThinkingModel = nanoGptOpenAICompatible(
 
 export const glmModel = nanoGptOpenAICompatible(NANO_GPT_GLM_SUBMODEL);
 
+export const nanoGptGeminiFlashModel = nanoGptOpenAICompatible(
+	NANO_GPT_GEMINI_FLASH_SUBMODEL,
+);
+
 // Keep the persisted "deepseek" option stable while targeting DeepSeek's
 // current recommended production model.
 export const deepseekModel = deepseek("deepseek-v4-pro");
@@ -63,6 +71,7 @@ export const MODEL_MAP = {
 	[NANO_GPT_GLM_MODEL_TYPE]: glmModel,
 	anthropic: anthropicModel,
 	deepseek: deepseekModel,
+	[NANO_GPT_GEMINI_FLASH_MODEL_TYPE]: nanoGptGeminiFlashModel,
 } as const;
 
 export const MODEL_MAX_TOKENS: Partial<Record<ModelType, number>> = {

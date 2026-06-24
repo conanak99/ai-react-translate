@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import {
 	type ModelType,
+	NANO_GPT_GEMINI_FLASH_MODEL_TYPE,
 	NANO_GPT_GLM_MODEL_TYPE,
 	NANO_GPT_MIMO_THINKING_MODEL_TYPE,
 	type ScraperProvider,
@@ -385,6 +386,23 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									className="text-gray-700 dark:text-gray-300"
 								>
 									GLM 5.2
+								</label>
+							</div>
+							<div className="flex items-center gap-2">
+								<input
+									type="radio"
+									id="nanogpt_gemini_flash_model"
+									name="model"
+									value={NANO_GPT_GEMINI_FLASH_MODEL_TYPE}
+									checked={model === NANO_GPT_GEMINI_FLASH_MODEL_TYPE}
+									onChange={(e) => setModel(e.target.value as ModelType)}
+									className="scale-125"
+								/>
+								<label
+									htmlFor="nanogpt_gemini_flash_model"
+									className="text-gray-700 dark:text-gray-300"
+								>
+									Nano GPT Gemini 3.5 Flash
 								</label>
 							</div>
 						</div>
