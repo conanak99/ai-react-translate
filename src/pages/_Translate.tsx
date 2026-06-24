@@ -285,94 +285,111 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 						<span className="text-gray-700 dark:text-gray-300 font-medium text-sm whitespace-nowrap">
 							AI Model:
 						</span>
-						<div className="flex flex-wrap items-center gap-4">
-							<div className="flex items-center gap-2">
-								<input
-									type="radio"
-									id="google_model"
-									name="model"
-									value="google"
-									checked={model === "google"}
-									onChange={(e) => setModel(e.target.value as ModelType)}
-									className="scale-125"
-								/>
-								<label
-									htmlFor="google_model"
-									className="text-gray-700 dark:text-gray-300"
-								>
-									Gemini 3.1 Pro
-								</label>
-							</div>
-							<div className="flex items-center gap-2">
-								<input
-									type="radio"
-									id="google_flash_model"
-									name="model"
-									value="google_flash"
-									checked={model === "google_flash"}
-									onChange={(e) => setModel(e.target.value as ModelType)}
-									className="scale-125"
-								/>
-								<label
-									htmlFor="google_flash_model"
-									className="text-gray-700 dark:text-gray-300"
-								>
-									Gemini 3.5 Flash
-								</label>
-							</div>
-							<div className="flex items-center gap-2">
-								<input
-									type="radio"
-									id="deepseek_model"
-									name="model"
-									value="deepseek"
-									checked={model === "deepseek"}
-									onChange={(e) => setModel(e.target.value as ModelType)}
-									className="scale-125"
-								/>
-								<label
-									htmlFor="deepseek_model"
-									className="text-gray-700 dark:text-gray-300"
-								>
-									DeepSeek V4 Pro
-								</label>
-							</div>
-							<div className="flex items-center gap-2">
-								<input
-									type="radio"
-									id="anthropic_model"
-									name="model"
-									value="anthropic"
-									checked={model === "anthropic"}
-									onChange={(e) => setModel(e.target.value as ModelType)}
-									className="scale-125"
-								/>
-								<label
-									htmlFor="anthropic_model"
-									className="text-gray-700 dark:text-gray-300"
-								>
-									Claude
-								</label>
-							</div>
-							{NANO_GPT_MODEL_OPTIONS.map(({ modelType, label }) => (
-								<div key={modelType} className="flex items-center gap-2">
-									<input
-										type="radio"
-										id={modelType}
-										name="model"
-										value={modelType}
-										checked={model === modelType}
-										onChange={(e) => setModel(e.target.value as ModelType)}
-										className="scale-125"
-									/>
-									<label
-										htmlFor={modelType}
-										className="text-gray-700 dark:text-gray-300"
-									>
-										{label}
-									</label>
+						<div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+							<div className="flex flex-col gap-1.5">
+								<span className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+									Direct
+								</span>
+								<div className="flex flex-wrap items-center gap-4">
+									<div className="flex items-center gap-2">
+										<input
+											type="radio"
+											id="google_model"
+											name="model"
+											value="google"
+											checked={model === "google"}
+											onChange={(e) => setModel(e.target.value as ModelType)}
+											className="scale-125"
+										/>
+										<label
+											htmlFor="google_model"
+											className="text-gray-700 dark:text-gray-300"
+										>
+											Gemini 3.1 Pro
+										</label>
+									</div>
+									<div className="flex items-center gap-2">
+										<input
+											type="radio"
+											id="google_flash_model"
+											name="model"
+											value="google_flash"
+											checked={model === "google_flash"}
+											onChange={(e) => setModel(e.target.value as ModelType)}
+											className="scale-125"
+										/>
+										<label
+											htmlFor="google_flash_model"
+											className="text-gray-700 dark:text-gray-300"
+										>
+											Gemini 3.5 Flash
+										</label>
+									</div>
+									<div className="flex items-center gap-2">
+										<input
+											type="radio"
+											id="deepseek_model"
+											name="model"
+											value="deepseek"
+											checked={model === "deepseek"}
+											onChange={(e) => setModel(e.target.value as ModelType)}
+											className="scale-125"
+										/>
+										<label
+											htmlFor="deepseek_model"
+											className="text-gray-700 dark:text-gray-300"
+										>
+											DeepSeek V4 Pro
+										</label>
+									</div>
+									<div className="flex items-center gap-2">
+										<input
+											type="radio"
+											id="anthropic_model"
+											name="model"
+											value="anthropic"
+											checked={model === "anthropic"}
+											onChange={(e) => setModel(e.target.value as ModelType)}
+											className="scale-125"
+										/>
+										<label
+											htmlFor="anthropic_model"
+											className="text-gray-700 dark:text-gray-300"
+										>
+											Claude
+										</label>
+									</div>
 								</div>
-							))}
+							</div>
+
+							<div className="hidden lg:block self-stretch w-px bg-gray-200 dark:bg-gray-700 mx-1" />
+
+							<div className="flex flex-col gap-1.5">
+								<span className="text-xs font-semibold uppercase tracking-wide text-indigo-400 dark:text-indigo-300">
+									via Nano GPT
+								</span>
+								<div className="flex flex-wrap items-center gap-4">
+									{NANO_GPT_MODEL_OPTIONS.map(({ modelType, label }) => (
+										<div key={modelType} className="flex items-center gap-2">
+											<input
+												type="radio"
+												id={modelType}
+												name="model"
+												value={modelType}
+												checked={model === modelType}
+												onChange={(e) => setModel(e.target.value as ModelType)}
+												className="scale-125"
+											/>
+											<label
+												htmlFor={modelType}
+												className="text-gray-700 dark:text-gray-300"
+											>
+												{label}
+											</label>
+										</div>
+									))}
+								</div>
+							</div>
 						</div>
 					</div>
 
