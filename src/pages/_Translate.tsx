@@ -354,11 +354,11 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									Claude
 								</label>
 							</div>
-							{NANO_GPT_MODEL_OPTIONS.map(({ inputId, modelType, label }) => (
+							{NANO_GPT_MODEL_OPTIONS.map(({ modelType, label }) => (
 								<div key={modelType} className="flex items-center gap-2">
 									<input
 										type="radio"
-										id={inputId}
+										id={modelType}
 										name="model"
 										value={modelType}
 										checked={model === modelType}
@@ -366,7 +366,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 										className="scale-125"
 									/>
 									<label
-										htmlFor={inputId}
+										htmlFor={modelType}
 										className="text-gray-700 dark:text-gray-300"
 									>
 										{label}

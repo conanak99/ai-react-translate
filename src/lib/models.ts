@@ -6,17 +6,14 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 function nanoGptModel<const TSubmodel extends string>({
 	submodel,
 	label,
-	inputId,
 }: {
 	submodel: TSubmodel;
 	label: string;
-	inputId: string;
 }) {
 	return {
 		submodel,
 		modelType: `nanogpt|${submodel}` as `nanogpt|${TSubmodel}`,
 		label,
-		inputId,
 	};
 }
 
@@ -24,17 +21,14 @@ export const NANO_GPT_MODELS = {
 	mimoThinking: nanoGptModel({
 		submodel: "xiaomi/mimo-v2.5-pro:thinking",
 		label: "Mimo V2.5 Pro",
-		inputId: "nanogpt_model",
 	}),
 	glm: nanoGptModel({
 		submodel: "zai-org/glm-5.2",
 		label: "GLM 5.2",
-		inputId: "glm_model",
 	}),
 	geminiFlash: nanoGptModel({
 		submodel: "google/gemini-3.5-flash",
 		label: "Nano GPT Gemini 3.5 Flash",
-		inputId: "nanogpt_gemini_flash_model",
 	}),
 } as const;
 
