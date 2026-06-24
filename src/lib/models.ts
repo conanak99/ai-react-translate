@@ -3,24 +3,45 @@ import { createDeepSeek } from "@ai-sdk/deepseek";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
-export const NANO_GPT_MIMO_THINKING_SUBMODEL = "xiaomi/mimo-v2.5-pro:thinking";
-export const NANO_GPT_GLM_SUBMODEL = "zai-org/glm-5.2";
-export const NANO_GPT_GEMINI_FLASH_SUBMODEL = "google/gemini-3.5-flash";
-export const NANO_GPT_MIMO_THINKING_MODEL_TYPE =
-	`nanogpt|${NANO_GPT_MIMO_THINKING_SUBMODEL}` as const;
-export const NANO_GPT_GLM_MODEL_TYPE =
-	`nanogpt|${NANO_GPT_GLM_SUBMODEL}` as const;
-export const NANO_GPT_GEMINI_FLASH_MODEL_TYPE =
-	`nanogpt|${NANO_GPT_GEMINI_FLASH_SUBMODEL}` as const;
+function nanoGptModel<const TSubmodel extends string>({
+	submodel,
+	label,
+}: {
+	submodel: TSubmodel;
+	label: string;
+}) {
+	return {
+		submodel,
+		modelType: `nanogpt|${submodel}` as `nanogpt|${TSubmodel}`,
+		label,
+	};
+}
+
+export const NANO_GPT_MODELS = {
+	mimoThinking: nanoGptModel({
+		submodel: "xiaomi/mimo-v2.5-pro:thinking",
+		label: "Mimo V2.5 Pro",
+	}),
+	glm: nanoGptModel({
+		submodel: "zai-org/glm-5.2",
+		label: "GLM 5.2",
+	}),
+	geminiFlash: nanoGptModel({
+		submodel: "google/gemini-3.5-flash",
+		label: "Nano GPT Gemini 3.5 Flash",
+	}),
+} as const;
+
+export type NanoGptModel =
+	(typeof NANO_GPT_MODELS)[keyof typeof NANO_GPT_MODELS];
+export type NanoGptModelType = NanoGptModel["modelType"];
 
 export type ModelType =
 	| "google"
 	| "google_flash"
 	| "anthropic"
 	| "deepseek"
-	| typeof NANO_GPT_MIMO_THINKING_MODEL_TYPE
-	| typeof NANO_GPT_GLM_MODEL_TYPE
-	| typeof NANO_GPT_GEMINI_FLASH_MODEL_TYPE;
+	| NanoGptModelType;
 
 export type ScraperProvider = "jina" | "firecrawl";
 
@@ -49,15 +70,12 @@ export const googleModel = google("gemini-3.1-pro-preview");
 
 export const googleFlashModel = google("gemini-3.5-flash");
 
-export const mimoThinkingModel = nanoGptOpenAICompatible(
-	NANO_GPT_MIMO_THINKING_SUBMODEL,
-);
-
-export const glmModel = nanoGptOpenAICompatible(NANO_GPT_GLM_SUBMODEL);
-
-export const nanoGptGeminiFlashModel = nanoGptOpenAICompatible(
-	NANO_GPT_GEMINI_FLASH_SUBMODEL,
-);
+const nanoGptModelMap = Object.fromEntries(
+	Object.values(NANO_GPT_MODELS).map(({ modelType, submodel }) => [
+		modelType,
+		nanoGptOpenAICompatible(submodel),
+	]),
+) as Record<NanoGptModelType, ReturnType<typeof nanoGptOpenAICompatible>>;
 
 // Keep the persisted "deepseek" option stable while targeting DeepSeek's
 // current recommended production model.
@@ -67,11 +85,9 @@ export const deepseekModel = deepseek("deepseek-v4-pro");
 export const MODEL_MAP = {
 	google: googleModel,
 	google_flash: googleFlashModel,
-	[NANO_GPT_MIMO_THINKING_MODEL_TYPE]: mimoThinkingModel,
-	[NANO_GPT_GLM_MODEL_TYPE]: glmModel,
 	anthropic: anthropicModel,
 	deepseek: deepseekModel,
-	[NANO_GPT_GEMINI_FLASH_MODEL_TYPE]: nanoGptGeminiFlashModel,
+	...nanoGptModelMap,
 } as const;
 
 export const MODEL_MAX_TOKENS: Partial<Record<ModelType, number>> = {

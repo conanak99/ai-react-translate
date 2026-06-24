@@ -3,15 +3,15 @@ import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import {
 	type ModelType,
-	NANO_GPT_GEMINI_FLASH_MODEL_TYPE,
-	NANO_GPT_GLM_MODEL_TYPE,
-	NANO_GPT_MIMO_THINKING_MODEL_TYPE,
+	NANO_GPT_MODELS,
 	type ScraperProvider,
 } from "@/lib/models";
 
 import type { Mode } from "@/lib/translation/constants";
 import { getNextChapterUrl, getPreviousChapterUrl } from "@/lib/utils";
 import { addLink, setTranslateUrl } from "../pocket";
+
+const NANO_GPT_MODEL_OPTIONS = Object.values(NANO_GPT_MODELS);
 
 const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
@@ -354,57 +354,25 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									Claude
 								</label>
 							</div>
-							<div className="flex items-center gap-2">
-								<input
-									type="radio"
-									id="nanogpt_model"
-									name="model"
-									value={NANO_GPT_MIMO_THINKING_MODEL_TYPE}
-									checked={model === NANO_GPT_MIMO_THINKING_MODEL_TYPE}
-									onChange={(e) => setModel(e.target.value as ModelType)}
-									className="scale-125"
-								/>
-								<label
-									htmlFor="nanogpt_model"
-									className="text-gray-700 dark:text-gray-300"
-								>
-									Mimo V2.5 Pro
-								</label>
-							</div>
-							<div className="flex items-center gap-2">
-								<input
-									type="radio"
-									id="glm_model"
-									name="model"
-									value={NANO_GPT_GLM_MODEL_TYPE}
-									checked={model === NANO_GPT_GLM_MODEL_TYPE}
-									onChange={(e) => setModel(e.target.value as ModelType)}
-									className="scale-125"
-								/>
-								<label
-									htmlFor="glm_model"
-									className="text-gray-700 dark:text-gray-300"
-								>
-									GLM 5.2
-								</label>
-							</div>
-							<div className="flex items-center gap-2">
-								<input
-									type="radio"
-									id="nanogpt_gemini_flash_model"
-									name="model"
-									value={NANO_GPT_GEMINI_FLASH_MODEL_TYPE}
-									checked={model === NANO_GPT_GEMINI_FLASH_MODEL_TYPE}
-									onChange={(e) => setModel(e.target.value as ModelType)}
-									className="scale-125"
-								/>
-								<label
-									htmlFor="nanogpt_gemini_flash_model"
-									className="text-gray-700 dark:text-gray-300"
-								>
-									Nano GPT Gemini 3.5 Flash
-								</label>
-							</div>
+							{NANO_GPT_MODEL_OPTIONS.map(({ modelType, label }) => (
+								<div key={modelType} className="flex items-center gap-2">
+									<input
+										type="radio"
+										id={modelType}
+										name="model"
+										value={modelType}
+										checked={model === modelType}
+										onChange={(e) => setModel(e.target.value as ModelType)}
+										className="scale-125"
+									/>
+									<label
+										htmlFor={modelType}
+										className="text-gray-700 dark:text-gray-300"
+									>
+										{label}
+									</label>
+								</div>
+							))}
 						</div>
 					</div>
 
