@@ -1,0 +1,21 @@
+---
+import "@/styles/global.css";
+
+import { getStoredNames } from "@/pocket";
+import Names from "./_Names";
+
+const initialNames = await getStoredNames();
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Names - AI Convert Translator</title>
+  </head>
+  <body class="dark:bg-gray-900">
+    <Names initialNames={initialNames} client:load />
+  </body>
+</html>
