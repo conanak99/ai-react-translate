@@ -1,5 +1,5 @@
 import { actions } from "astro:actions";
-import { useState } from "react";
+import { type SyntheticEvent, useState } from "react";
 import type { NameEntry } from "@/pocket";
 
 type NamesProps = {
@@ -10,7 +10,7 @@ function getActionMessage(error: { message?: string } | undefined) {
 	return error?.message ?? "Unable to update names";
 }
 
-const Names: React.FC<NamesProps> = ({ initialNames }) => {
+const Names = ({ initialNames }: NamesProps) => {
 	const [names, setNames] = useState(initialNames);
 	const [key, setKey] = useState("");
 	const [value, setValue] = useState("");
@@ -21,7 +21,7 @@ const Names: React.FC<NamesProps> = ({ initialNames }) => {
 	const enabledCount = names.filter((name) => !name.disabled).length;
 	const isAdding = pendingAction === "add";
 
-	async function addName(event: React.FormEvent<HTMLFormElement>) {
+	async function addName(event: SyntheticEvent<HTMLFormElement>) {
 		event.preventDefault();
 		setPendingAction("add");
 		setErrorMessage(null);
@@ -109,7 +109,10 @@ const Names: React.FC<NamesProps> = ({ initialNames }) => {
 
 				<section className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
 					<h2 className="text-lg font-semibold">Add name</h2>
-					<form onSubmit={addName} className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+					<form
+						onSubmit={addName}
+						className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_auto]"
+					>
 						<label className="flex flex-col gap-1 text-sm font-medium">
 							Key
 							<input
@@ -175,8 +178,10 @@ const Names: React.FC<NamesProps> = ({ initialNames }) => {
 								</thead>
 								<tbody className="divide-y divide-gray-200 dark:divide-gray-700">
 									{names.map((name) => {
-										const togglePending = pendingAction === `toggle:${name.key}`;
-										const deletePending = pendingAction === `delete:${name.key}`;
+										const togglePending =
+											pendingAction === `toggle:${name.key}`;
+										const deletePending =
+											pendingAction === `delete:${name.key}`;
 
 										return (
 											<tr
@@ -200,7 +205,9 @@ const Names: React.FC<NamesProps> = ({ initialNames }) => {
 															}
 															className="size-4 rounded border-gray-300"
 														/>
-														<span>{name.disabled ? "Disabled" : "Enabled"}</span>
+														<span>
+															{name.disabled ? "Disabled" : "Enabled"}
+														</span>
 													</label>
 												</td>
 												<td className="px-6 py-4 text-right">
