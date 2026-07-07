@@ -4,8 +4,15 @@ const API_URL = "https://pocketbase.codedao.cc";
 const COLLECTION_NAME = "key_values";
 
 const KEY = "ai_translate_url";
+const NAMES_KEY = "names";
 
 const pb = new PocketBase(API_URL);
+
+export type NameEntry = {
+	key: string;
+	value: string;
+	disabled: boolean;
+};
 
 type KeyValue = {
 	id: string;
@@ -15,7 +22,7 @@ type KeyValue = {
 	updated: string;
 	key: string;
 	value: string;
-	json: object;
+	json: unknown;
 };
 
 interface Link {
@@ -39,8 +46,62 @@ export async function getTranslateUrl() {
 }
 
 export async function getNames(): Promise<Record<string, string>> {
-	const record = await getKeyValue("names");
-	return record.json as Record<string, string>;
+	const names = await getStoredNames();
+
+	return Object.fromEntries(
+		names
+			.filter(({ disabled }) => !disabled)
+			.map(({ key, value }) => [key, value]),
+	);
+}
+
+export async function getStoredNames(): Promise<NameEntry[]> {
+	const record = await getKeyValue(NAMES_KEY);
+	return record.json as NameEntry[];
+}
+
+async function updateStoredNames(names: NameEntry[]) {
+	const record = await getKeyValue(NAMES_KEY);
+	const updatedRecord = await pb
+		.collection<KeyValue>(COLLECTION_NAME)
+		.update(record.id, { json: names });
+	return updatedRecord.json as NameEntry[];
+}
+
+export async function addNameEntry({
+	key,
+	value,
+}: Pick<NameEntry, "key" | "value">): Promise<NameEntry[]> {
+	const names = await getStoredNames();
+	const normalizedKey = key.trim();
+
+	if (names.some((name) => name.key === normalizedKey)) {
+		throw new Error(`Name "${normalizedKey}" already exists`);
+	}
+
+	return updateStoredNames([
+		...names,
+		{
+			key: normalizedKey,
+			value: value.trim(),
+			disabled: false,
+		},
+	]);
+}
+
+export async function deleteNameEntry(key: string): Promise<NameEntry[]> {
+	const names = await getStoredNames();
+	return updateStoredNames(names.filter((name) => name.key !== key));
+}
+
+export async function setNameEntryDisabled({
+	key,
+	disabled,
+}: Pick<NameEntry, "key" | "disabled">): Promise<NameEntry[]> {
+	const names = await getStoredNames();
+	return updateStoredNames(
+		names.map((name) => (name.key === key ? { ...name, disabled } : name)),
+	);
 }
 
 export async function setTranslateUrl(url: string) {
