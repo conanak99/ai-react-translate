@@ -30,6 +30,10 @@ export const NANO_GPT_MODELS = {
 		submodel: "google/gemini-3.5-flash",
 		label: "Gemini 3.5 Flash",
 	}),
+	grok: nanoGptModel({
+		submodel: "x-ai/grok-4.5",
+		label: "Grok 4.5",
+	}),
 } as const;
 
 export type NanoGptModel =
