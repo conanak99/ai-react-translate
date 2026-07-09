@@ -18,10 +18,11 @@ function nanoGptModel<const TSubmodel extends string>({
 }
 
 export const NANO_GPT_MODELS = {
-	mimoThinking: nanoGptModel({
-		submodel: "xiaomi/mimo-v2.5-pro:thinking",
-		label: "Mimo V2.5 Pro",
-	}),
+	// Disabled: output quality was too low for translation use.
+	// mimoThinking: nanoGptModel({
+	// 	submodel: "xiaomi/mimo-v2.5-pro:thinking",
+	// 	label: "Mimo V2.5 Pro",
+	// }),
 	glm: nanoGptModel({
 		submodel: "zai-org/glm-5.2",
 		label: "GLM 5.2",
@@ -30,10 +31,11 @@ export const NANO_GPT_MODELS = {
 		submodel: "google/gemini-3.5-flash",
 		label: "Gemini 3.5 Flash",
 	}),
-	grok: nanoGptModel({
-		submodel: "x-ai/grok-4.5",
-		label: "Grok 4.5",
-	}),
+	// Disabled: output quality was too low for translation use.
+	// grok: nanoGptModel({
+	// 	submodel: "x-ai/grok-4.5",
+	// 	label: "Grok 4.5",
+	// }),
 } as const;
 
 export type NanoGptModel =
