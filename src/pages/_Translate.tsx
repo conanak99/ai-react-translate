@@ -2,14 +2,14 @@ import { useCompletion } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import {
+	getInitialModelFromStorage,
+	persistLastUsedModel,
+} from "@/lib/model-storage";
+import {
 	type ModelType,
 	NANO_GPT_MODELS,
 	type ScraperProvider,
 } from "@/lib/models";
-import {
-	getInitialModelFromStorage,
-	persistLastUsedModel,
-} from "@/lib/model-storage";
 
 import type { Mode } from "@/lib/translation/constants";
 import { getNextChapterUrl, getPreviousChapterUrl } from "@/lib/utils";

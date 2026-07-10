@@ -1,8 +1,4 @@
-import {
-	DEFAULT_MODEL_TYPE,
-	isModelType,
-	type ModelType,
-} from "@/lib/models";
+import { DEFAULT_MODEL_TYPE, isModelType, type ModelType } from "./models";
 
 export const LAST_USED_MODEL_STORAGE_KEY = "lastUsedModel";
 
@@ -39,7 +35,9 @@ export function getInitialModelFromStorage(
 		return lastUsedModel;
 	}
 
-	const legacyModel = parseStoredValue(storage.getItem(LEGACY_MODEL_STORAGE_KEY));
+	const legacyModel = parseStoredValue(
+		storage.getItem(LEGACY_MODEL_STORAGE_KEY),
+	);
 
 	if (isModelType(legacyModel)) {
 		return legacyModel;

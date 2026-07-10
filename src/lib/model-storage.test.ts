@@ -45,7 +45,9 @@ test("falls back to the legacy model key", () => {
 		model: JSON.stringify(NANO_GPT_MODELS.glm.modelType),
 	});
 
-	expect(getInitialModelFromStorage(storage)).toBe(NANO_GPT_MODELS.glm.modelType);
+	expect(getInitialModelFromStorage(storage)).toBe(
+		NANO_GPT_MODELS.glm.modelType,
+	);
 });
 
 test("returns the default model when storage is empty or invalid", () => {
