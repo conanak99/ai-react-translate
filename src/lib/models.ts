@@ -31,6 +31,10 @@ export const NANO_GPT_MODELS = {
 		submodel: "google/gemini-3.5-flash",
 		label: "Gemini 3.5 Flash",
 	}),
+	museSpark: nanoGptModel({
+		submodel: "meta/muse-spark-1.1",
+		label: "Muse Spark 1.1",
+	}),
 	// Disabled: output quality was too low for translation use.
 	// grok: nanoGptModel({
 	// 	submodel: "x-ai/grok-4.5",
