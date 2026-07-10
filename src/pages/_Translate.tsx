@@ -6,6 +6,10 @@ import {
 	NANO_GPT_MODELS,
 	type ScraperProvider,
 } from "@/lib/models";
+import {
+	getInitialModelFromStorage,
+	persistLastUsedModel,
+} from "@/lib/model-storage";
 
 import type { Mode } from "@/lib/translation/constants";
 import { getNextChapterUrl, getPreviousChapterUrl } from "@/lib/utils";
@@ -17,7 +21,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
 	const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
 	const [mode, setMode] = useLocalStorage<Mode>("mode", "light_novel");
-	const [model, setModel] = useLocalStorage<ModelType>("model", "google");
+	const [model, setModel] = useState<ModelType>(getInitialModelFromStorage);
 	const [scraperProvider, setScraperProvider] =
 		useLocalStorage<ScraperProvider>("scraperProvider", "jina");
 	const [ignoreCache, setIgnoreCache] = useState(false);
@@ -28,6 +32,10 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 		// Update dark mode class on html element
 		document.documentElement.classList.toggle("dark", isDarkMode);
 	}, [isDarkMode]);
+
+	useEffect(() => {
+		persistLastUsedModel(model);
+	}, [model]);
 
 	const {
 		completion,

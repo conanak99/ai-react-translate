@@ -53,6 +53,23 @@ export type ModelType =
 	| "deepseek"
 	| NanoGptModelType;
 
+export const DEFAULT_MODEL_TYPE = "google" satisfies ModelType;
+
+export const MODEL_TYPES = [
+	"google",
+	"google_flash",
+	"anthropic",
+	"deepseek",
+	...Object.values(NANO_GPT_MODELS).map(({ modelType }) => modelType),
+] as const satisfies readonly ModelType[];
+
+export function isModelType(value: unknown): value is ModelType {
+	return (
+		typeof value === "string" &&
+		(MODEL_TYPES as readonly string[]).includes(value)
+	);
+}
+
 export type ScraperProvider = "jina" | "firecrawl";
 
 const anthropic = createAnthropic({
