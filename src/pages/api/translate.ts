@@ -28,14 +28,11 @@ function getCacheKey(
 	return `${url}|${mode}|${model}|${scraperProvider}`;
 }
 
-async function getStreamResult(
-	url: string,
+async function getStreamResultFromSource(
+	source: string,
 	mode: Mode,
 	model: ModelType = "google",
-	scraperProvider: ScraperProvider = "jina",
 ): Promise<Result> {
-	const html = await crawl(url, scraperProvider);
-
 	const PROMPT_MAP = await getPromptMap();
 
 	console.time("streamText");
@@ -51,7 +48,7 @@ async function getStreamResult(
 				role: "user",
 				content: `Here are the original work you will be working with:
 <original>
-${html}
+${source}
 </original>`,
 			},
 		],
@@ -83,14 +80,25 @@ ${html}
 	return result;
 }
 
+async function getStreamResult(
+	url: string,
+	mode: Mode,
+	model: ModelType = "google",
+	scraperProvider: ScraperProvider = "jina",
+): Promise<Result> {
+	const html = await crawl(url, scraperProvider);
+	return getStreamResultFromSource(html, mode, model);
+}
+
 async function getContinuationStreamResult(
 	url: string,
 	mode: Mode,
 	model: ModelType = "google",
 	scraperProvider: ScraperProvider = "jina",
 	continueFrom: string,
+	directTranslate = false,
 ): Promise<Result> {
-	const html = await crawl(url, scraperProvider);
+	const html = directTranslate ? url : await crawl(url, scraperProvider);
 
 	const PROMPT_MAP = await getPromptMap();
 
@@ -213,6 +221,7 @@ export const POST: APIRoute = async ({ request }) => {
 		model = "google",
 		scraperProvider = "jina",
 		continueFrom,
+		directTranslate = false,
 	}: {
 		prompt: string;
 		ignoreCache: boolean;
@@ -220,6 +229,7 @@ export const POST: APIRoute = async ({ request }) => {
 		model: ModelType;
 		scraperProvider: ScraperProvider;
 		continueFrom?: string;
+		directTranslate?: boolean;
 	} = await request.json();
 	const url = prompt;
 
@@ -230,7 +240,18 @@ export const POST: APIRoute = async ({ request }) => {
 			model,
 			scraperProvider,
 			continueFrom,
+			directTranslate,
 		);
+
+		return (
+			result?.toTextStreamResponse() ?? new Response(null, { status: 501 })
+		);
+	}
+
+	// Direct translate: treat the prompt as the source text itself.
+	// No scraping, no cache, no next-chapter prefetch.
+	if (directTranslate) {
+		const result = await getStreamResultFromSource(prompt, mode, model);
 
 		return (
 			result?.toTextStreamResponse() ?? new Response(null, { status: 501 })
