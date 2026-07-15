@@ -21,6 +21,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	const [scraperProvider, setScraperProvider] =
 		useLocalStorage<ScraperProvider>("scraperProvider", "jina");
 	const [ignoreCache, setIgnoreCache] = useState(false);
+	const [directTranslate, setDirectTranslate] = useState(false);
 	const [continuedCompletionPrefix, setContinuedCompletionPrefix] =
 		useState("");
 
@@ -49,6 +50,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 			mode,
 			model,
 			scraperProvider,
+			directTranslate,
 		},
 	});
 
@@ -69,6 +71,10 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	// }, [input]);
 
 	async function goToChapter(direction: "next" | "previous") {
+		if (directTranslate) {
+			return;
+		}
+
 		stop();
 		setContinuedCompletionPrefix("");
 
@@ -88,6 +94,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 				mode,
 				model,
 				scraperProvider,
+				directTranslate: false,
 			},
 		});
 
@@ -111,6 +118,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 				model,
 				scraperProvider,
 				continueFrom: currentCompletion,
+				directTranslate,
 			},
 		});
 	}
@@ -151,7 +159,11 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 							rows={3}
 							value={input}
 							onChange={handleInputChange}
-							placeholder="Enter URL For Translation"
+							placeholder={
+								directTranslate
+									? "Paste Text For Direct Translation"
+									: "Enter URL For Translation"
+							}
 							className="flex-1 rounded-lg border p-2 focus:outline-none focus:border-blue-500 bg-white dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600"
 						/>
 						{isLoading ? (
@@ -179,20 +191,37 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 				<div className="flex flex-col gap-4 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
 					{/* First row: Ignore Cache and Font/Theme controls */}
 					<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-						<div className="flex items-center gap-2">
-							<input
-								type="checkbox"
-								id="ignoreCache"
-								checked={ignoreCache}
-								onChange={(e) => setIgnoreCache(e.target.checked)}
-								className="rounded border-gray-300 dark:border-gray-600 scale-125"
-							/>
-							<label
-								htmlFor="ignoreCache"
-								className="text-gray-700 dark:text-gray-300 text-lg"
-							>
-								Ignore Cache
-							</label>
+						<div className="flex flex-wrap items-center gap-4">
+							<div className="flex items-center gap-2">
+								<input
+									type="checkbox"
+									id="ignoreCache"
+									checked={ignoreCache}
+									onChange={(e) => setIgnoreCache(e.target.checked)}
+									className="rounded border-gray-300 dark:border-gray-600 scale-125"
+								/>
+								<label
+									htmlFor="ignoreCache"
+									className="text-gray-700 dark:text-gray-300 text-lg"
+								>
+									Ignore Cache
+								</label>
+							</div>
+							<div className="flex items-center gap-2">
+								<input
+									type="checkbox"
+									id="directTranslate"
+									checked={directTranslate}
+									onChange={(e) => setDirectTranslate(e.target.checked)}
+									className="rounded border-gray-300 dark:border-gray-600 scale-125"
+								/>
+								<label
+									htmlFor="directTranslate"
+									className="text-gray-700 dark:text-gray-300 text-lg"
+								>
+									Direct Translate
+								</label>
+							</div>
 						</div>
 
 						<div className="flex gap-2">
@@ -476,14 +505,20 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 					)}
 				</div>
 
-				<div className="flex justify-between p-4 border-t dark:border-gray-700">
-					<button
-						type="button"
-						className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-						onClick={() => goToChapter("previous")}
-					>
-						Previous Chapter
-					</button>
+				<div
+					className={`flex p-4 border-t dark:border-gray-700 ${
+						directTranslate ? "justify-center" : "justify-between"
+					}`}
+				>
+					{!directTranslate && (
+						<button
+							type="button"
+							className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+							onClick={() => goToChapter("previous")}
+						>
+							Previous Chapter
+						</button>
+					)}
 					{canContinueTranslation && (
 						<button
 							type="button"
@@ -493,13 +528,15 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 							Continue
 						</button>
 					)}
-					<button
-						type="button"
-						className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-						onClick={() => goToChapter("next")}
-					>
-						Next Chapter
-					</button>
+					{!directTranslate && (
+						<button
+							type="button"
+							className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+							onClick={() => goToChapter("next")}
+						>
+							Next Chapter
+						</button>
+					)}
 				</div>
 			</div>
 		</div>
