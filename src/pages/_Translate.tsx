@@ -422,52 +422,54 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 						</div>
 					</div>
 
-					{/* Fourth row: Scraper Provider */}
-					<div className="flex flex-col lg:flex-row lg:items-center gap-3">
-						<span className="text-gray-700 dark:text-gray-300 font-medium text-sm whitespace-nowrap">
-							Scraper:
-						</span>
-						<div className="flex flex-wrap items-center gap-4">
-							<div className="flex items-center gap-2">
-								<input
-									type="radio"
-									id="scraper_jina"
-									name="scraperProvider"
-									value="jina"
-									checked={scraperProvider === "jina"}
-									onChange={(e) =>
-										setScraperProvider(e.target.value as ScraperProvider)
-									}
-									className="scale-125"
-								/>
-								<label
-									htmlFor="scraper_jina"
-									className="text-gray-700 dark:text-gray-300"
-								>
-									Jina AI
-								</label>
-							</div>
-							<div className="flex items-center gap-2">
-								<input
-									type="radio"
-									id="scraper_firecrawl"
-									name="scraperProvider"
-									value="firecrawl"
-									checked={scraperProvider === "firecrawl"}
-									onChange={(e) =>
-										setScraperProvider(e.target.value as ScraperProvider)
-									}
-									className="scale-125"
-								/>
-								<label
-									htmlFor="scraper_firecrawl"
-									className="text-gray-700 dark:text-gray-300"
-								>
-									Firecrawl
-								</label>
+					{/* Fourth row: Scraper Provider (irrelevant when translating pasted text directly) */}
+					{!directTranslate && (
+						<div className="flex flex-col lg:flex-row lg:items-center gap-3">
+							<span className="text-gray-700 dark:text-gray-300 font-medium text-sm whitespace-nowrap">
+								Scraper:
+							</span>
+							<div className="flex flex-wrap items-center gap-4">
+								<div className="flex items-center gap-2">
+									<input
+										type="radio"
+										id="scraper_jina"
+										name="scraperProvider"
+										value="jina"
+										checked={scraperProvider === "jina"}
+										onChange={(e) =>
+											setScraperProvider(e.target.value as ScraperProvider)
+										}
+										className="scale-125"
+									/>
+									<label
+										htmlFor="scraper_jina"
+										className="text-gray-700 dark:text-gray-300"
+									>
+										Jina AI
+									</label>
+								</div>
+								<div className="flex items-center gap-2">
+									<input
+										type="radio"
+										id="scraper_firecrawl"
+										name="scraperProvider"
+										value="firecrawl"
+										checked={scraperProvider === "firecrawl"}
+										onChange={(e) =>
+											setScraperProvider(e.target.value as ScraperProvider)
+										}
+										className="scale-125"
+									/>
+									<label
+										htmlFor="scraper_firecrawl"
+										className="text-gray-700 dark:text-gray-300"
+									>
+										Firecrawl
+									</label>
+								</div>
 							</div>
 						</div>
-					</div>
+					)}
 				</div>
 
 				<div
