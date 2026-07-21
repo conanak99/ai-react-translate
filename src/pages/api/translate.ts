@@ -1,5 +1,5 @@
 import type { GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
-import { streamText } from "ai";
+import { createTextStreamResponse, streamText, toTextStream } from "ai";
 import type { APIRoute } from "astro";
 import delay from "delay";
 import { crawl } from "@/lib/crawler";
@@ -13,6 +13,16 @@ import { getNextChapterUrl } from "@/lib/utils";
 import { getPromptMap, type Mode } from "../../lib/translation/constants";
 
 type Result = Awaited<ReturnType<typeof streamText>>;
+
+function toStreamResponse(result: Result | undefined): Response {
+	if (!result) {
+		return new Response(null, { status: 501 });
+	}
+
+	return createTextStreamResponse({
+		stream: toTextStream({ stream: result.stream }),
+	});
+}
 
 const RESULT_CACHE: Map<
 	string,
@@ -39,11 +49,8 @@ async function getStreamResultFromSource(
 	const result = streamText({
 		model: MODEL_MAP[model],
 		maxOutputTokens: MODEL_MAX_TOKENS[model],
+		instructions: PROMPT_MAP[mode],
 		messages: [
-			{
-				role: "system",
-				content: PROMPT_MAP[mode],
-			},
 			{
 				role: "user",
 				content: `Here are the original work you will be working with:
@@ -106,11 +113,8 @@ async function getContinuationStreamResult(
 	const result = streamText({
 		model: MODEL_MAP[model],
 		maxOutputTokens: MODEL_MAX_TOKENS[model],
+		instructions: PROMPT_MAP[mode],
 		messages: [
-			{
-				role: "system",
-				content: PROMPT_MAP[mode],
-			},
 			{
 				role: "user",
 				content: `Here are the original work you will be working with:
@@ -243,9 +247,7 @@ export const POST: APIRoute = async ({ request }) => {
 			directTranslate,
 		);
 
-		return (
-			result?.toTextStreamResponse() ?? new Response(null, { status: 501 })
-		);
+		return toStreamResponse(result);
 	}
 
 	// Direct translate: treat the prompt as the source text itself.
@@ -253,9 +255,7 @@ export const POST: APIRoute = async ({ request }) => {
 	if (directTranslate) {
 		const result = await getStreamResultFromSource(prompt, mode, model);
 
-		return (
-			result?.toTextStreamResponse() ?? new Response(null, { status: 501 })
-		);
+		return toStreamResponse(result);
 	}
 
 	const result = await getStreamFromCache(
@@ -277,5 +277,5 @@ export const POST: APIRoute = async ({ request }) => {
 		);
 	}
 
-	return result?.toTextStreamResponse() ?? new Response(null, { status: 501 });
+	return toStreamResponse(result);
 };
