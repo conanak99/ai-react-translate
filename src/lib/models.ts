@@ -28,8 +28,8 @@ export const NANO_GPT_MODELS = {
 		label: "GLM 5.2",
 	}),
 	geminiFlash: nanoGptModel({
-		submodel: "google/gemini-3.5-flash",
-		label: "Gemini 3.5 Flash",
+		submodel: "google/gemini-3.6-flash",
+		label: "Gemini 3.6 Flash",
 	}),
 	museSpark: nanoGptModel({
 		submodel: "meta/muse-spark-1.1",
@@ -78,7 +78,7 @@ export const anthropicModel = anthropic("claude-opus-4-8");
 // export const googleModel = google("gemini-2.5-pro");
 export const googleModel = google("gemini-3.1-pro-preview");
 
-export const googleFlashModel = google("gemini-3.5-flash");
+export const googleFlashModel = google("gemini-3.6-flash");
 
 const nanoGptModelMap = Object.fromEntries(
 	Object.values(NANO_GPT_MODELS).map(({ modelType, submodel }) => [
