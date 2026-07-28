@@ -17,6 +17,13 @@ function nanoGptModel<const TSubmodel extends string>({
 	};
 }
 
+// https://docs.nano-gpt.com/api-reference/endpoint/chat-completion#service-tiers-priority
+export type NanoGptServiceTier = "auto" | "default" | "flex" | "priority";
+
+// Flex trades guaranteed capacity for lower prices, which suits translation
+// requests that are not latency critical.
+export const NANO_GPT_SERVICE_TIER: NanoGptServiceTier = "flex";
+
 export const NANO_GPT_MODELS = {
 	// Disabled: output quality was too low for translation use.
 	// mimoThinking: nanoGptModel({
@@ -34,6 +41,10 @@ export const NANO_GPT_MODELS = {
 	museSpark: nanoGptModel({
 		submodel: "meta/muse-spark-1.1",
 		label: "Muse Spark 1.1",
+	}),
+	gptSol: nanoGptModel({
+		submodel: "openai/gpt-5.6-sol",
+		label: "GPT 5.6 Sol",
 	}),
 	// Disabled: output quality was too low for translation use.
 	// grok: nanoGptModel({
@@ -54,6 +65,10 @@ export type ModelType =
 	| NanoGptModelType;
 
 export type ScraperProvider = "jina" | "firecrawl";
+
+export function isNanoGptModel(model: ModelType): model is NanoGptModelType {
+	return model.startsWith("nanogpt|");
+}
 
 const anthropic = createAnthropic({
 	apiKey: import.meta.env.CLAUDE_AI_KEY,
