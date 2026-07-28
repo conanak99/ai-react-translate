@@ -2,7 +2,7 @@
 
 ## Cursor Cloud specific instructions
 
-This is a single Astro v6 (SSR) + React 19 app — an AI web-novel translator ("AI Convert Translator"). There is only one service to run. Node `>=22.0.0` is required (see `package.json` `engines`).
+This is a single Astro v6 (SSR) + React 19 app — an AI web-novel translator ("AI Convert Translator"). There is only one service to run. Node `>=24.0.0` is required (see `package.json` `engines`).
 
 Standard commands live in `package.json` scripts; use them directly:
 - Dev server: `npm run dev` (Astro dev on `http://localhost:4321`; override port with `PORT`).
