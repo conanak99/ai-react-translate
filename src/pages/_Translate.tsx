@@ -385,7 +385,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 											htmlFor="anthropic_model"
 											className="text-gray-700 dark:text-gray-300"
 										>
-											Claude
+											Claude Opus 5
 										</label>
 									</div>
 								</div>

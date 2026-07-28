@@ -4,9 +4,11 @@ import type { APIRoute } from "astro";
 import delay from "delay";
 import { crawl } from "@/lib/crawler";
 import {
+	isNanoGptModel,
 	MODEL_MAP,
 	MODEL_MAX_TOKENS,
 	type ModelType,
+	NANO_GPT_SERVICE_TIER,
 	type ScraperProvider,
 } from "@/lib/models";
 import { getNextChapterUrl } from "@/lib/utils";
@@ -28,6 +30,43 @@ const RESULT_CACHE: Map<
 	string,
 	{ status: "pending" | "success"; result?: Result }
 > = new Map();
+
+type ProviderOptions = NonNullable<
+	Parameters<typeof streamText>[0]["providerOptions"]
+>;
+
+function getProviderOptions(model: ModelType): ProviderOptions | undefined {
+	if (model === "google" || model === "google_flash") {
+		return {
+			google: {
+				safetySettings: [
+					{ category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+					{
+						category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+						threshold: "BLOCK_NONE",
+					},
+					{ category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+					{
+						category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+						threshold: "BLOCK_NONE",
+					},
+					{
+						category: "HARM_CATEGORY_CIVIC_INTEGRITY",
+						threshold: "BLOCK_NONE",
+					},
+				],
+			} satisfies GoogleGenerativeAIProviderOptions,
+		};
+	}
+
+	if (isNanoGptModel(model)) {
+		// Unknown keys are forwarded as-is to the chat completion body, which is
+		// how Nano GPT expects the service tier to be requested.
+		return { nanoGpt: { service_tier: NANO_GPT_SERVICE_TIER } };
+	}
+
+	return undefined;
+}
 
 function getCacheKey(
 	url: string,
@@ -59,28 +98,7 @@ ${source}
 </original>`,
 			},
 		],
-		...((model === "google" || model === "google_flash") && {
-			providerOptions: {
-				google: {
-					safetySettings: [
-						{ category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-						{
-							category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-							threshold: "BLOCK_NONE",
-						},
-						{ category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-						{
-							category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-							threshold: "BLOCK_NONE",
-						},
-						{
-							category: "HARM_CATEGORY_CIVIC_INTEGRITY",
-							threshold: "BLOCK_NONE",
-						},
-					],
-				} satisfies GoogleGenerativeAIProviderOptions,
-			},
-		}),
+		providerOptions: getProviderOptions(model),
 	});
 	console.timeEnd("streamText");
 
@@ -132,28 +150,7 @@ ${html}
 					"Your previous translation was cut off. Continue from exactly where it stopped. Return only the missing continuation text, without repeating any text already shown and without adding explanations or notes.",
 			},
 		],
-		...((model === "google" || model === "google_flash") && {
-			providerOptions: {
-				google: {
-					safetySettings: [
-						{ category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-						{
-							category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-							threshold: "BLOCK_NONE",
-						},
-						{ category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-						{
-							category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-							threshold: "BLOCK_NONE",
-						},
-						{
-							category: "HARM_CATEGORY_CIVIC_INTEGRITY",
-							threshold: "BLOCK_NONE",
-						},
-					],
-				} satisfies GoogleGenerativeAIProviderOptions,
-			},
-		}),
+		providerOptions: getProviderOptions(model),
 	});
 	console.timeEnd("continueStreamText");
 
