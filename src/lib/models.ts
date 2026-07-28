@@ -73,7 +73,7 @@ const nanoGptOpenAICompatible = createOpenAICompatible({
 	baseURL: "https://nano-gpt.com/api/v1",
 });
 
-export const anthropicModel = anthropic("claude-opus-4-8");
+export const anthropicModel = anthropic("claude-opus-5");
 
 // export const googleModel = google("gemini-2.5-pro");
 export const googleModel = google("gemini-3.1-pro-preview");
