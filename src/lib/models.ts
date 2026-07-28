@@ -42,10 +42,12 @@ export const NANO_GPT_MODELS = {
 		submodel: "meta/muse-spark-1.1",
 		label: "Muse Spark 1.1",
 	}),
-	gptSol: nanoGptModel({
-		submodel: "openai/gpt-5.6-sol",
-		label: "GPT 5.6 Sol",
-	}),
+	// Disabled: safety filters reject the chapters we send, so every request
+	// fails with "Your prompt was blocked by safety filters."
+	// gptSol: nanoGptModel({
+	// 	submodel: "openai/gpt-5.6-sol",
+	// 	label: "GPT 5.6 Sol",
+	// }),
 	// Disabled: output quality was too low for translation use.
 	// grok: nanoGptModel({
 	// 	submodel: "x-ai/grok-4.5",

@@ -15,14 +15,14 @@ test("nano gpt requests are sent with the configured service tier", async () => 
 	});
 
 	const result = streamText({
-		model: MODEL_MAP["nanogpt|openai/gpt-5.6-sol"],
+		model: MODEL_MAP["nanogpt|zai-org/glm-5.2"],
 		prompt: "hello",
 		providerOptions: { nanoGpt: { service_tier: NANO_GPT_SERVICE_TIER } },
 	});
 	await result.consumeStream();
 
 	expect(bodies[0]).toMatchObject({
-		model: "openai/gpt-5.6-sol",
+		model: "zai-org/glm-5.2",
 		service_tier: "flex",
 	});
 });
