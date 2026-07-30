@@ -3,17 +3,31 @@ import { createDeepSeek } from "@ai-sdk/deepseek";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
+// Subset of the AI SDK's `reasoning` call setting. Providers translate it into
+// their own knob; Nano GPT sends it as `reasoning_effort`.
+// https://docs.nano-gpt.com/api-reference/miscellaneous/extended-thinking
+export type ReasoningEffort =
+	| "none"
+	| "minimal"
+	| "low"
+	| "medium"
+	| "high"
+	| "xhigh";
+
 function nanoGptModel<const TSubmodel extends string>({
 	submodel,
 	label,
+	reasoningEffort,
 }: {
 	submodel: TSubmodel;
 	label: string;
+	reasoningEffort?: ReasoningEffort;
 }) {
 	return {
 		submodel,
 		modelType: `nanogpt|${submodel}` as `nanogpt|${TSubmodel}`,
 		label,
+		reasoningEffort,
 	};
 }
 
@@ -37,6 +51,13 @@ export const NANO_GPT_MODELS = {
 	geminiFlash: nanoGptModel({
 		submodel: "google/gemini-3.6-flash",
 		label: "Gemini 3.6 Flash",
+	}),
+	kimi: nanoGptModel({
+		submodel: "moonshotai/kimi-k3",
+		label: "Kimi K3",
+		// "xhigh" is the maximum depth and burns far more reasoning tokens than a
+		// chapter translation needs.
+		reasoningEffort: "high",
 	}),
 	museSpark: nanoGptModel({
 		submodel: "meta/muse-spark-1.1",
@@ -121,3 +142,11 @@ export const MODEL_MAX_TOKENS: Partial<Record<ModelType, number>> = {
 	anthropic: 128000,
 	deepseek: 48000,
 };
+
+export const MODEL_REASONING_EFFORT: Partial<
+	Record<ModelType, ReasoningEffort>
+> = Object.fromEntries(
+	Object.values(NANO_GPT_MODELS)
+		.filter((model) => model.reasoningEffort != null)
+		.map(({ modelType, reasoningEffort }) => [modelType, reasoningEffort]),
+);

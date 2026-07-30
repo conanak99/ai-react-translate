@@ -7,6 +7,7 @@ import {
 	isNanoGptModel,
 	MODEL_MAP,
 	MODEL_MAX_TOKENS,
+	MODEL_REASONING_EFFORT,
 	type ModelType,
 	NANO_GPT_SERVICE_TIER,
 	type ScraperProvider,
@@ -88,6 +89,7 @@ async function getStreamResultFromSource(
 	const result = streamText({
 		model: MODEL_MAP[model],
 		maxOutputTokens: MODEL_MAX_TOKENS[model],
+		reasoning: MODEL_REASONING_EFFORT[model],
 		instructions: PROMPT_MAP[mode],
 		messages: [
 			{
@@ -131,6 +133,7 @@ async function getContinuationStreamResult(
 	const result = streamText({
 		model: MODEL_MAP[model],
 		maxOutputTokens: MODEL_MAX_TOKENS[model],
+		reasoning: MODEL_REASONING_EFFORT[model],
 		instructions: PROMPT_MAP[mode],
 		messages: [
 			{
