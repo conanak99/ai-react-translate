@@ -39,7 +39,6 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 		setCompletion,
 		setInput,
 		handleInputChange,
-		handleSubmit,
 		isLoading,
 	} = useCompletion({
 		api: "/api/translate",
@@ -149,8 +148,14 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 			<div className="bg-white dark:bg-gray-800 rounded-lg shadow flex flex-col h-full">
 				<form
 					onSubmit={(event) => {
+						event.preventDefault();
+						if (!input) {
+							return;
+						}
 						setContinuedCompletionPrefix("");
-						handleSubmit(event);
+						// handleSubmit() clears `input` as of @ai-sdk/react 4.0.64.
+						// Keep the URL/text so Next/Previous and Continue still work.
+						complete(input);
 					}}
 					className="p-4"
 				>
