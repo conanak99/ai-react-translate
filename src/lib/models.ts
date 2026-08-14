@@ -49,8 +49,8 @@ export const NANO_GPT_MODELS = {
 		label: "GLM 5.2",
 	}),
 	geminiFlash: nanoGptModel({
-		submodel: "google/gemini-3.6-flash",
-		label: "Gemini 3.6 Flash",
+		submodel: "google/gemini-3.7-flash",
+		label: "Gemini 3.7 Flash",
 	}),
 	kimi: nanoGptModel({
 		submodel: "moonshotai/kimi-k3",
