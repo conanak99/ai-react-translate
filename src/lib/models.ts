@@ -116,7 +116,7 @@ export const anthropicModel = anthropic("claude-opus-5");
 // export const googleModel = google("gemini-2.5-pro");
 export const googleModel = google("gemini-3.1-pro-preview");
 
-export const googleFlashModel = google("gemini-3.6-flash");
+export const googleFlashModel = google("gemini-3.7-flash");
 
 const nanoGptModelMap = Object.fromEntries(
 	Object.values(NANO_GPT_MODELS).map(({ modelType, submodel }) => [
