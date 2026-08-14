@@ -59,6 +59,10 @@ export const NANO_GPT_MODELS = {
 		// chapter translation needs.
 		reasoningEffort: "high",
 	}),
+	qwenMaxThinking: nanoGptModel({
+		submodel: "qwen3.8-max:thinking",
+		label: "Qwen 3.8 Max Thinking",
+	}),
 	museSpark: nanoGptModel({
 		submodel: "meta/muse-spark-1.1",
 		label: "Muse Spark 1.1",
