@@ -356,7 +356,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 											htmlFor="google_flash_model"
 											className="text-gray-700 dark:text-gray-300"
 										>
-											Gemini 3.7 Flash
+											Gemini 3.8 Flash
 										</label>
 									</div>
 									<div className="flex items-center gap-2">
