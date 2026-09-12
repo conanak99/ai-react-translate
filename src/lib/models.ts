@@ -49,8 +49,8 @@ export const NANO_GPT_MODELS = {
 		label: "GLM 5.2",
 	}),
 	geminiFlash: nanoGptModel({
-		submodel: "google/gemini-3.7-flash",
-		label: "Gemini 3.7 Flash",
+		submodel: "google/gemini-3.8-flash",
+		label: "Gemini 3.8 Flash",
 	}),
 	kimi: nanoGptModel({
 		submodel: "moonshotai/kimi-k3",
@@ -64,8 +64,8 @@ export const NANO_GPT_MODELS = {
 		label: "Qwen 3.8 Max Thinking",
 	}),
 	museSpark: nanoGptModel({
-		submodel: "meta/muse-spark-1.2",
-		label: "Muse Spark 1.2",
+		submodel: "meta/muse-spark-1.3-contributor",
+		label: "Muse Spark 1.3",
 	}),
 	// Disabled: safety filters reject the chapters we send, so every request
 	// fails with "Your prompt was blocked by safety filters."
@@ -120,7 +120,7 @@ export const anthropicModel = anthropic("claude-opus-5");
 // export const googleModel = google("gemini-2.5-pro");
 export const googleModel = google("gemini-3.1-pro-preview");
 
-export const googleFlashModel = google("gemini-3.7-flash");
+export const googleFlashModel = google("gemini-3.8-flash");
 
 const nanoGptModelMap = Object.fromEntries(
 	Object.values(NANO_GPT_MODELS).map(({ modelType, submodel }) => [
