@@ -1,76 +1,250 @@
 ---
 import "@/styles/global.css";
 
+import { groupHistoryLinks } from "../lib/history";
 import { getLatestLinks } from "../pocket";
 
 const latestLinks = await getLatestLinks();
+const domainGroups = groupHistoryLinks(latestLinks);
+const dateFormatter = new Intl.DateTimeFormat("en", {
+	dateStyle: "medium",
+	timeStyle: "short",
+});
 ---
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>AI Convert Translator</title>
-  </head>
-  <body class="dark:bg-gray-900">
-    <div class="w-full lg:max-w-6xl mx-auto p-4">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">History</h1>
-        <div class="space-y-4">
-          {latestLinks.map((item) => (
-            <div
-              class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
-            >
-              <a
-                href={item.link}
-                class="text-blue-600 dark:text-blue-400 hover:underline mr-4 break-all"
-              >
-                {item.link}
-              </a>
-              <button
-                type="button"
-                class="copy-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors shrink-0"
-                data-link={item.link}
-              >
-                Copy
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/png" sizes="96x96" href="/favicon.png" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<meta
+			name="description"
+			content="Recently translated web novel chapters, grouped by website and path."
+		/>
+		<title>Translation History · AI Convert Translator</title>
+	</head>
+	<body class="min-h-screen bg-slate-50 text-slate-950 antialiased dark:bg-slate-950 dark:text-slate-50">
+		<div class="pointer-events-none fixed inset-x-0 top-0 h-72 bg-gradient-to-b from-blue-100/70 to-transparent dark:from-blue-950/30"></div>
+		<main class="relative mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+			<header class="mb-8">
+				<a
+					href="/"
+					class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+				>
+					<span aria-hidden="true">←</span>
+					Translator
+				</a>
+				<div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+					<div>
+						<p class="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">
+							Recent activity
+						</p>
+						<h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Translation history</h1>
+						<p class="mt-3 max-w-2xl text-slate-600 dark:text-slate-400">
+							The latest {latestLinks.length} translated links, organized by website and path.
+						</p>
+					</div>
+					<div class="flex gap-3 text-sm">
+						<div class="rounded-xl border border-slate-200 bg-white/80 px-4 py-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+							<span class="block text-xs text-slate-500 dark:text-slate-400">Websites</span>
+							<span class="text-lg font-semibold">{domainGroups.length}</span>
+						</div>
+						<div class="rounded-xl border border-slate-200 bg-white/80 px-4 py-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+							<span class="block text-xs text-slate-500 dark:text-slate-400">Links</span>
+							<span class="text-lg font-semibold">{latestLinks.length}</span>
+						</div>
+					</div>
+				</div>
+			</header>
 
-    <script>
-      // Add click handlers for copy buttons
-      document.querySelectorAll('.copy-btn').forEach(button => {
-        button.addEventListener('click', async () => {
-          const link = button.getAttribute('data-link');
-          if (link) {
-            try {
-              await navigator.clipboard.writeText(link);
+			<div class="sticky top-3 z-20 mb-6">
+				<label class="relative block">
+					<span class="sr-only">Filter history</span>
+					<svg
+						aria-hidden="true"
+						class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<circle cx="11" cy="11" r="7"></circle>
+						<path d="m20 20-3.5-3.5"></path>
+					</svg>
+					<input
+						id="history-filter"
+						type="search"
+						placeholder="Filter by website, path, or page…"
+						class="w-full rounded-2xl border border-slate-200 bg-white/95 py-3.5 pl-12 pr-4 text-sm shadow-lg shadow-slate-200/40 outline-none backdrop-blur transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-black/20"
+					/>
+				</label>
+			</div>
 
-              // Change button text temporarily
-              const originalText = button.textContent;
-              button.textContent = 'Copied!';
-              button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
-              button.classList.add('bg-green-500', 'hover:bg-green-600');
+			<div id="history-groups" class="space-y-4">
+				{domainGroups.map((domain, domainIndex) => (
+					<details
+						class="domain-group group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm open:shadow-md dark:border-slate-800 dark:bg-slate-900"
+						data-search={domain.label.toLowerCase()}
+						open={domainIndex === 0}
+					>
+						<summary class="flex cursor-pointer list-none items-center gap-4 px-5 py-4 transition-colors hover:bg-slate-50 sm:px-6 dark:hover:bg-slate-800/60">
+							<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400">
+								<svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<circle cx="12" cy="12" r="9"></circle>
+									<path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"></path>
+								</svg>
+							</div>
+							<div class="min-w-0 flex-1">
+								<h2 class="truncate font-semibold">{domain.label}</h2>
+								<p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+									{domain.paths.length} {domain.paths.length === 1 ? "path" : "paths"}
+								</p>
+							</div>
+							<span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+								{domain.count}
+							</span>
+							<svg aria-hidden="true" class="h-5 w-5 shrink-0 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<path d="m6 9 6 6 6-6"></path>
+							</svg>
+						</summary>
 
-              setTimeout(() => {
-                button.textContent = originalText;
-                button.classList.remove('bg-green-500', 'hover:bg-green-600');
-                button.classList.add('bg-blue-500', 'hover:bg-blue-600');
-              }, 2000);
-            } catch (err) {
-              console.error('Failed to copy text: ', err);
-            }
-          }
-        });
-      });
-    </script>
-  </body>
+						<div class="border-t border-slate-100 bg-slate-50/60 p-3 sm:p-4 dark:border-slate-800 dark:bg-slate-950/30">
+							<div class="space-y-3">
+								{domain.paths.map((pathGroup, pathIndex) => (
+									<details
+										class="path-group overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+										data-search={`${domain.label} ${pathGroup.label}`.toLowerCase()}
+										open={domainIndex === 0 && pathIndex === 0}
+									>
+										<summary class="flex cursor-pointer list-none items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/60">
+											<svg aria-hidden="true" class="h-4 w-4 shrink-0 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+												<path d="M3 6h6l2 2h10v10H3z"></path>
+											</svg>
+											<h3 class="min-w-0 flex-1 truncate font-mono text-sm font-medium">
+												{pathGroup.label}
+											</h3>
+											<span class="text-xs text-slate-500 dark:text-slate-400">
+												{pathGroup.links.length}
+											</span>
+											<svg aria-hidden="true" class="h-4 w-4 text-slate-400 transition-transform [[open]>&]:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+												<path d="m6 9 6 6 6-6"></path>
+											</svg>
+										</summary>
 
+										<div class="divide-y divide-slate-100 border-t border-slate-100 dark:divide-slate-800 dark:border-slate-800">
+											{pathGroup.links.map((item) => (
+												<article
+													class="history-link-row flex items-center gap-3 px-4 py-3"
+													data-search={`${domain.label} ${pathGroup.label} ${item.pageLabel} ${item.link}`.toLowerCase()}
+												>
+													<div class="min-w-0 flex-1">
+														<a
+															href={item.link}
+															target="_blank"
+															rel="noreferrer"
+															class="block truncate text-sm font-medium text-blue-700 hover:underline dark:text-blue-400"
+															title={item.link}
+														>
+															{item.pageLabel}
+														</a>
+														<time
+															datetime={item.created}
+															class="mt-1 block text-xs text-slate-500 dark:text-slate-400"
+														>
+															{dateFormatter.format(new Date(item.created))}
+														</time>
+													</div>
+													<button
+														type="button"
+														class="copy-btn inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-blue-700 dark:hover:text-blue-400"
+														data-link={item.link}
+														aria-label={`Copy ${item.link}`}
+													>
+														<svg aria-hidden="true" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+															<rect x="8" y="8" width="12" height="12" rx="2"></rect>
+															<path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path>
+														</svg>
+														<span>Copy</span>
+													</button>
+												</article>
+											))}
+										</div>
+									</details>
+								))}
+							</div>
+						</div>
+					</details>
+				))}
+			</div>
+
+			<p id="empty-filter" class="hidden rounded-2xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+				No links match that filter.
+			</p>
+		</main>
+
+		<script>
+			const filter = document.querySelector<HTMLInputElement>("#history-filter");
+			const emptyFilter = document.querySelector<HTMLElement>("#empty-filter");
+
+			filter?.addEventListener("input", () => {
+				const query = filter.value.trim().toLowerCase();
+				let visibleDomains = 0;
+
+				document.querySelectorAll<HTMLDetailsElement>(".domain-group").forEach((domain) => {
+					let visiblePaths = 0;
+
+					domain.querySelectorAll<HTMLDetailsElement>(".path-group").forEach((path) => {
+						let visibleLinks = 0;
+
+						path.querySelectorAll<HTMLElement>(".history-link-row").forEach((row) => {
+							const matches = !query || row.dataset.search?.includes(query);
+							row.classList.toggle("hidden", !matches);
+							if (matches) visibleLinks += 1;
+						});
+
+						const pathMatches = !query || path.dataset.search?.includes(query);
+						const showPath = pathMatches || visibleLinks > 0;
+						path.classList.toggle("hidden", !showPath);
+						if (showPath) {
+							visiblePaths += 1;
+							if (query) path.open = true;
+						}
+					});
+
+					const domainMatches = !query || domain.dataset.search?.includes(query);
+					const showDomain = domainMatches || visiblePaths > 0;
+					domain.classList.toggle("hidden", !showDomain);
+					if (showDomain) {
+						visibleDomains += 1;
+						if (query) domain.open = true;
+					}
+				});
+
+				emptyFilter?.classList.toggle("hidden", visibleDomains > 0);
+			});
+
+			document.querySelectorAll<HTMLButtonElement>(".copy-btn").forEach((button) => {
+				button.addEventListener("click", async () => {
+					const link = button.dataset.link;
+					const label = button.querySelector("span");
+					if (!link || !label) return;
+
+					try {
+						await navigator.clipboard.writeText(link);
+						label.textContent = "Copied";
+						button.classList.add("border-emerald-300", "text-emerald-600");
+						window.setTimeout(() => {
+							label.textContent = "Copy";
+							button.classList.remove("border-emerald-300", "text-emerald-600");
+						}, 1600);
+					} catch (error) {
+						console.error("Failed to copy link", error);
+					}
+				});
+			});
+		</script>
+	</body>
 </html>
