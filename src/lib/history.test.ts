@@ -23,8 +23,8 @@ describe("groupHistoryLinks", () => {
 		]);
 
 		expect(groups.map(({ label }) => label)).toEqual([
-			"https://ixdzs.tw/",
-			"https://example.com/",
+			"ixdzs.tw",
+			"example.com",
 		]);
 		expect(groups[0].paths.map(({ label }) => label)).toEqual([
 			"read/502663",
@@ -52,7 +52,7 @@ describe("groupHistoryLinks", () => {
 		]);
 
 		expect(groups[0]).toMatchObject({
-			label: "https://jinyong.net.cn/",
+			label: "jinyong.net.cn",
 			paths: [
 				{
 					label: "old_liudingji",
@@ -64,6 +64,19 @@ describe("groupHistoryLinks", () => {
 					],
 				},
 			],
+		});
+	});
+
+	it("groups HTTP and HTTPS links under the same domain", () => {
+		const groups = groupHistoryLinks([
+			link("1", "http://www.b111.net/book/1.html", "2026-01-02"),
+			link("2", "https://www.b111.net/book/2.html", "2026-01-01"),
+		]);
+
+		expect(groups).toHaveLength(1);
+		expect(groups[0]).toMatchObject({
+			label: "www.b111.net",
+			count: 2,
 		});
 	});
 });

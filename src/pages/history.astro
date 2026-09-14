@@ -10,6 +10,7 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
 	dateStyle: "medium",
 	timeStyle: "short",
 });
+const linkOrder = new Map(latestLinks.map((link, index) => [link.id, index]));
 ---
 
 <html lang="en">
@@ -60,8 +61,8 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
 				</div>
 			</header>
 
-			<div class="sticky top-3 z-20 mb-6">
-				<label class="relative block">
+			<div class="sticky top-3 z-20 mb-6 flex flex-col gap-3 sm:flex-row">
+				<label class="relative block min-w-0 flex-1">
 					<span class="sr-only">Filter history</span>
 					<svg
 						aria-hidden="true"
@@ -81,6 +82,38 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
 						class="w-full rounded-2xl border border-slate-200 bg-white/95 py-3.5 pl-12 pr-4 text-sm shadow-lg shadow-slate-200/40 outline-none backdrop-blur transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-black/20"
 					/>
 				</label>
+				<div
+					class="flex shrink-0 rounded-2xl border border-slate-200 bg-white/95 p-1 shadow-lg shadow-slate-200/40 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-black/20"
+					role="group"
+					aria-label="History layout"
+				>
+					<button
+						type="button"
+						class="view-toggle flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:text-slate-950 aria-pressed:bg-slate-900 aria-pressed:text-white aria-pressed:shadow-sm sm:flex-none dark:text-slate-300 dark:hover:text-white dark:aria-pressed:bg-slate-100 dark:aria-pressed:text-slate-900"
+						data-view="grouped"
+						aria-pressed="true"
+					>
+						<svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<rect x="3" y="4" width="18" height="6" rx="2"></rect>
+							<rect x="3" y="14" width="18" height="6" rx="2"></rect>
+						</svg>
+						Grouped
+					</button>
+					<button
+						type="button"
+						class="view-toggle flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:text-slate-950 aria-pressed:bg-slate-900 aria-pressed:text-white aria-pressed:shadow-sm sm:flex-none dark:text-slate-300 dark:hover:text-white dark:aria-pressed:bg-slate-100 dark:aria-pressed:text-slate-900"
+						data-view="list"
+						aria-pressed="false"
+					>
+						<svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M8 6h13M8 12h13M8 18h13"></path>
+							<circle cx="4" cy="6" r=".5" fill="currentColor"></circle>
+							<circle cx="4" cy="12" r=".5" fill="currentColor"></circle>
+							<circle cx="4" cy="18" r=".5" fill="currentColor"></circle>
+						</svg>
+						List
+					</button>
+				</div>
 			</div>
 
 			<div id="history-groups" class="space-y-4">
@@ -139,6 +172,7 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
 												<article
 													class="history-link-row flex items-center gap-3 px-4 py-3"
 													data-search={`${domain.label} ${pathGroup.label} ${item.pageLabel} ${item.link}`.toLowerCase()}
+													data-order={linkOrder.get(item.id)}
 												>
 													<div class="min-w-0 flex-1">
 														<a
@@ -148,7 +182,8 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
 															class="block truncate text-sm font-medium text-blue-700 hover:underline dark:text-blue-400"
 															title={item.link}
 														>
-															{item.pageLabel}
+															<span class="grouped-link-label">{item.pageLabel}</span>
+															<span class="list-link-label hidden">{item.link}</span>
 														</a>
 														<time
 															datetime={item.created}
@@ -180,6 +215,13 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
 				))}
 			</div>
 
+			<div
+				id="flat-history"
+				class="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
+			>
+				<div id="flat-list" class="divide-y divide-slate-100 dark:divide-slate-800"></div>
+			</div>
+
 			<p id="empty-filter" class="hidden rounded-2xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
 				No links match that filter.
 			</p>
@@ -188,43 +230,116 @@ const dateFormatter = new Intl.DateTimeFormat("en", {
 		<script>
 			const filter = document.querySelector<HTMLInputElement>("#history-filter");
 			const emptyFilter = document.querySelector<HTMLElement>("#empty-filter");
+			const historyGroups = document.querySelector<HTMLElement>("#history-groups");
+			const flatHistory = document.querySelector<HTMLElement>("#flat-history");
+			const flatList = document.querySelector<HTMLElement>("#flat-list");
+			const rows = [
+				...document.querySelectorAll<HTMLElement>(".history-link-row"),
+			];
+			const originalParents = new Map(
+				rows.map((row) => [row, row.parentElement as HTMLElement]),
+			);
+			let currentView: "grouped" | "list" = "grouped";
 
-			filter?.addEventListener("input", () => {
-				const query = filter.value.trim().toLowerCase();
+			function matchesFilter(element: HTMLElement, query: string) {
+				return !query || element.dataset.search?.includes(query);
+			}
+
+			function filterGroupedView(query: string) {
 				let visibleDomains = 0;
 
-				document.querySelectorAll<HTMLDetailsElement>(".domain-group").forEach((domain) => {
-					let visiblePaths = 0;
+				document
+					.querySelectorAll<HTMLDetailsElement>(".domain-group")
+					.forEach((domain) => {
+						let visiblePaths = 0;
 
-					domain.querySelectorAll<HTMLDetailsElement>(".path-group").forEach((path) => {
-						let visibleLinks = 0;
+						domain
+							.querySelectorAll<HTMLDetailsElement>(".path-group")
+							.forEach((path) => {
+								let visibleLinks = 0;
 
-						path.querySelectorAll<HTMLElement>(".history-link-row").forEach((row) => {
-							const matches = !query || row.dataset.search?.includes(query);
-							row.classList.toggle("hidden", !matches);
-							if (matches) visibleLinks += 1;
-						});
+								path
+									.querySelectorAll<HTMLElement>(".history-link-row")
+									.forEach((row) => {
+										const matches = matchesFilter(row, query);
+										row.classList.toggle("hidden", !matches);
+										if (matches) visibleLinks += 1;
+									});
 
-						const pathMatches = !query || path.dataset.search?.includes(query);
-						const showPath = pathMatches || visibleLinks > 0;
-						path.classList.toggle("hidden", !showPath);
-						if (showPath) {
-							visiblePaths += 1;
-							if (query) path.open = true;
+								const showPath = matchesFilter(path, query) || visibleLinks > 0;
+								path.classList.toggle("hidden", !showPath);
+								if (showPath) {
+									visiblePaths += 1;
+									if (query) path.open = true;
+								}
+							});
+
+						const showDomain =
+							matchesFilter(domain, query) || visiblePaths > 0;
+						domain.classList.toggle("hidden", !showDomain);
+						if (showDomain) {
+							visibleDomains += 1;
+							if (query) domain.open = true;
 						}
 					});
 
-					const domainMatches = !query || domain.dataset.search?.includes(query);
-					const showDomain = domainMatches || visiblePaths > 0;
-					domain.classList.toggle("hidden", !showDomain);
-					if (showDomain) {
-						visibleDomains += 1;
-						if (query) domain.open = true;
-					}
-				});
+				return visibleDomains;
+			}
 
-				emptyFilter?.classList.toggle("hidden", visibleDomains > 0);
-			});
+			function applyFilter() {
+				const query = filter?.value.trim().toLowerCase() ?? "";
+				const visibleItems =
+					currentView === "grouped"
+						? filterGroupedView(query)
+						: rows.reduce((count, row) => {
+								const matches = matchesFilter(row, query);
+								row.classList.toggle("hidden", !matches);
+								return count + Number(matches);
+							}, 0);
+
+				emptyFilter?.classList.toggle("hidden", visibleItems > 0);
+			}
+
+			function setView(view: "grouped" | "list") {
+				currentView = view;
+
+				if (view === "list") {
+					const sortedRows = [...rows].sort(
+						(a, b) => Number(a.dataset.order) - Number(b.dataset.order),
+					);
+					flatList?.append(...sortedRows);
+				} else {
+					for (const row of rows) originalParents.get(row)?.append(row);
+				}
+
+				historyGroups?.classList.toggle("hidden", view !== "grouped");
+				flatHistory?.classList.toggle("hidden", view !== "list");
+				for (const label of document.querySelectorAll(".grouped-link-label")) {
+					label.classList.toggle("hidden", view !== "grouped");
+				}
+				for (const label of document.querySelectorAll(".list-link-label")) {
+					label.classList.toggle("hidden", view !== "list");
+				}
+				document
+					.querySelectorAll<HTMLButtonElement>(".view-toggle")
+					.forEach((button) => {
+						button.setAttribute(
+							"aria-pressed",
+							String(button.dataset.view === view),
+						);
+					});
+
+				applyFilter();
+			}
+
+			filter?.addEventListener("input", applyFilter);
+			document
+				.querySelectorAll<HTMLButtonElement>(".view-toggle")
+				.forEach((button) => {
+					button.addEventListener("click", () => {
+						setView(button.dataset.view === "list" ? "list" : "grouped");
+					});
+				});
 
 			document.querySelectorAll<HTMLButtonElement>(".copy-btn").forEach((button) => {
 				button.addEventListener("click", async () => {
