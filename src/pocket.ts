@@ -122,14 +122,13 @@ export async function addLink(link: string) {
 }
 
 export async function getLatestLinks() {
-	const pages = await Promise.all([
-		pb.collection<Link>(LINKS_COLLECTION).getList(1, 500, {
-			sort: "-created",
-		}),
-		pb.collection<Link>(LINKS_COLLECTION).getList(2, 500, {
-			sort: "-created",
-		}),
-	]);
+	const links = pb.collection<Link>(LINKS_COLLECTION);
+	const firstPage = await links.getList(1, 500, {
+		sort: "-created",
+	});
+	const secondPage = await links.getList(2, 500, {
+		sort: "-created",
+	});
 
-	return pages.flatMap(({ items }) => items);
+	return [...firstPage.items, ...secondPage.items];
 }
