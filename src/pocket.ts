@@ -122,8 +122,14 @@ export async function addLink(link: string) {
 }
 
 export async function getLatestLinks() {
-	const records = await pb.collection<Link>(LINKS_COLLECTION).getList(1, 500, {
-		sort: "-created",
-	});
-	return records.items;
+	const pages = await Promise.all([
+		pb.collection<Link>(LINKS_COLLECTION).getList(1, 500, {
+			sort: "-created",
+		}),
+		pb.collection<Link>(LINKS_COLLECTION).getList(2, 500, {
+			sort: "-created",
+		}),
+	]);
+
+	return pages.flatMap(({ items }) => items);
 }
