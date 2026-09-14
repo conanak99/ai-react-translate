@@ -51,12 +51,12 @@ export function groupHistoryLinks(links: Link[]): HistoryDomainGroup[] {
 
 	for (const link of sortedLinks) {
 		const url = parseLinkUrl(link.link);
-		const origin = url?.origin ?? "invalid";
+		const origin = url?.host ?? "invalid";
 		const domain =
 			domains.get(origin) ??
 			({
 				origin,
-				label: url ? `${url.origin}/` : "Invalid links",
+				label: url?.host ?? "Invalid links",
 				paths: [],
 				count: 0,
 			} satisfies HistoryDomainGroup);
