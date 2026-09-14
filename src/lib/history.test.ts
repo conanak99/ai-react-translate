@@ -45,4 +45,25 @@ describe("groupHistoryLinks", () => {
 			paths: [{ label: "Other", links: [{ pageLabel: "not a URL" }] }],
 		});
 	});
+
+	it("assumes HTTPS when a link has no scheme", () => {
+		const groups = groupHistoryLinks([
+			link("1", "jinyong.net.cn/old_liudingji/1917.html", "2026-01-01"),
+		]);
+
+		expect(groups[0]).toMatchObject({
+			label: "https://jinyong.net.cn/",
+			paths: [
+				{
+					label: "old_liudingji",
+					links: [
+						{
+							link: "https://jinyong.net.cn/old_liudingji/1917.html",
+							pageLabel: "1917.html",
+						},
+					],
+				},
+			],
+		});
+	});
 });

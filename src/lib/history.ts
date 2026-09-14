@@ -28,6 +28,21 @@ function getPathDetails(url: URL) {
 	};
 }
 
+function parseLinkUrl(link: string) {
+	const trimmedLink = link.trim();
+
+	for (const candidate of [trimmedLink, `https://${trimmedLink}`]) {
+		try {
+			const url = new URL(candidate);
+			if (url.protocol === "http:" || url.protocol === "https:") return url;
+		} catch {
+			// Try again with an assumed HTTPS scheme.
+		}
+	}
+
+	return undefined;
+}
+
 export function groupHistoryLinks(links: Link[]): HistoryDomainGroup[] {
 	const domains = new Map<string, HistoryDomainGroup>();
 	const sortedLinks = [...links].sort(
@@ -35,27 +50,19 @@ export function groupHistoryLinks(links: Link[]): HistoryDomainGroup[] {
 	);
 
 	for (const link of sortedLinks) {
-		let url: URL;
-
-		try {
-			url = new URL(link.link);
-		} catch {
-			url = new URL(`https://invalid.local/${encodeURIComponent(link.link)}`);
-		}
-
-		const isInvalid = url.hostname === "invalid.local";
-		const origin = isInvalid ? "invalid" : url.origin;
+		const url = parseLinkUrl(link.link);
+		const origin = url?.origin ?? "invalid";
 		const domain =
 			domains.get(origin) ??
 			({
 				origin,
-				label: isInvalid ? "Invalid links" : `${url.origin}/`,
+				label: url ? `${url.origin}/` : "Invalid links",
 				paths: [],
 				count: 0,
 			} satisfies HistoryDomainGroup);
-		const pathDetails = isInvalid
-			? { path: "/", label: "Other", pageLabel: link.link }
-			: getPathDetails(url);
+		const pathDetails = url
+			? getPathDetails(url)
+			: { path: "/", label: "Other", pageLabel: link.link };
 		let pathGroup = domain.paths.find(({ path }) => path === pathDetails.path);
 
 		if (!pathGroup) {
@@ -67,7 +74,11 @@ export function groupHistoryLinks(links: Link[]): HistoryDomainGroup[] {
 			domain.paths.push(pathGroup);
 		}
 
-		pathGroup.links.push({ ...link, pageLabel: pathDetails.pageLabel });
+		pathGroup.links.push({
+			...link,
+			link: url?.href ?? link.link,
+			pageLabel: pathDetails.pageLabel,
+		});
 		domain.count += 1;
 		domains.set(origin, domain);
 	}

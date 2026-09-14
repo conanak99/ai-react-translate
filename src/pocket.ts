@@ -122,8 +122,13 @@ export async function addLink(link: string) {
 }
 
 export async function getLatestLinks() {
-	const records = await pb.collection<Link>(LINKS_COLLECTION).getList(1, 500, {
+	const links = pb.collection<Link>(LINKS_COLLECTION);
+	const firstPage = await links.getList(1, 500, {
 		sort: "-created",
 	});
-	return records.items;
+	const secondPage = await links.getList(2, 500, {
+		sort: "-created",
+	});
+
+	return [...firstPage.items, ...secondPage.items];
 }
