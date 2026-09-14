@@ -25,7 +25,7 @@ type KeyValue = {
 	json: unknown;
 };
 
-interface Link {
+export interface Link {
 	id: string;
 	collectionId: string;
 	collectionName: string;
@@ -122,7 +122,7 @@ export async function addLink(link: string) {
 }
 
 export async function getLatestLinks() {
-	const records = await pb.collection<Link>(LINKS_COLLECTION).getList(1, 20, {
+	const records = await pb.collection<Link>(LINKS_COLLECTION).getList(1, 500, {
 		sort: "-created",
 	});
 	return records.items;
