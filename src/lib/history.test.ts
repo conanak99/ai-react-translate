@@ -37,9 +37,7 @@ describe("groupHistoryLinks", () => {
 	});
 
 	it("keeps malformed links in a separate group", () => {
-		const groups = groupHistoryLinks([
-			link("1", "not a URL", "2026-01-01"),
-		]);
+		const groups = groupHistoryLinks([link("1", "not a URL", "2026-01-01")]);
 
 		expect(groups[0]).toMatchObject({
 			label: "Invalid links",
