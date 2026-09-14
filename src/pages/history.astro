@@ -82,11 +82,10 @@ const linkOrder = new Map(latestLinks.map((link, index) => [link.id, index]));
 						class="w-full rounded-2xl border border-slate-200 bg-white/95 py-3.5 pl-12 pr-4 text-sm shadow-lg shadow-slate-200/40 outline-none backdrop-blur transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-black/20"
 					/>
 				</label>
-				<div
+				<fieldset
 					class="flex shrink-0 rounded-2xl border border-slate-200 bg-white/95 p-1 shadow-lg shadow-slate-200/40 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-black/20"
-					role="group"
-					aria-label="History layout"
 				>
+					<legend class="sr-only">History layout</legend>
 					<button
 						type="button"
 						class="view-toggle flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:text-slate-950 aria-pressed:bg-slate-900 aria-pressed:text-white aria-pressed:shadow-sm sm:flex-none dark:text-slate-300 dark:hover:text-white dark:aria-pressed:bg-slate-100 dark:aria-pressed:text-slate-900"
@@ -113,7 +112,7 @@ const linkOrder = new Map(latestLinks.map((link, index) => [link.id, index]));
 						</svg>
 						List
 					</button>
-				</div>
+				</fieldset>
 			</div>
 
 			<div id="history-groups" class="space-y-4">
