@@ -2,9 +2,10 @@ import { streamText } from "ai";
 import { expect, test, vi } from "vitest";
 
 import {
+	getProviderOptions,
 	MODEL_MAP,
 	MODEL_REASONING_EFFORT,
-	NANO_GPT_SERVICE_TIER,
+	MODEL_SERVICE_TIER,
 } from "./models";
 
 function stubStreamingFetch(bodies: unknown[]) {
@@ -17,27 +18,9 @@ function stubStreamingFetch(bodies: unknown[]) {
 	});
 }
 
-test("nano gpt requests are sent with the configured service tier", async () => {
-	const bodies: unknown[] = [];
-	stubStreamingFetch(bodies);
-
-	const result = streamText({
-		model: MODEL_MAP["nanogpt|zai-org/glm-5.2"],
-		prompt: "hello",
-		providerOptions: { nanoGpt: { service_tier: NANO_GPT_SERVICE_TIER } },
-	});
-	await result.consumeStream();
-
-	expect(bodies[0]).toMatchObject({
-		model: "zai-org/glm-5.2",
-		service_tier: "flex",
-	});
-	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
-});
-
-test("muse wonder model is registered in MODEL_MAP", async () => {
-	const model = "nanogpt|meta/muse-wonder";
-	expect(MODEL_MAP[model]).toBeDefined();
+test("nano gpt requests with service tier configure provider options", async () => {
+	const model = "nanogpt|google/gemini-3.8-flash";
+	expect(MODEL_SERVICE_TIER[model]).toBe("flex");
 
 	const bodies: unknown[] = [];
 	stubStreamingFetch(bodies);
@@ -45,20 +28,44 @@ test("muse wonder model is registered in MODEL_MAP", async () => {
 	const result = streamText({
 		model: MODEL_MAP[model],
 		prompt: "hello",
-		providerOptions: { nanoGpt: { service_tier: NANO_GPT_SERVICE_TIER } },
+		providerOptions: getProviderOptions(model),
 	});
 	await result.consumeStream();
 
 	expect(bodies[0]).toMatchObject({
-		model: "meta/muse-wonder",
+		model: "google/gemini-3.8-flash",
 		service_tier: "flex",
 	});
 	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
 });
 
-test("kimi k3 asks for high, not maximum, reasoning effort", async () => {
+test("muse wonder model does not send service_tier parameter", async () => {
+	const model = "nanogpt|meta/muse-wonder";
+	expect(MODEL_MAP[model]).toBeDefined();
+	expect(MODEL_SERVICE_TIER[model]).toBeUndefined();
+	expect(getProviderOptions(model)).toBeUndefined();
+
+	const bodies: unknown[] = [];
+	stubStreamingFetch(bodies);
+
+	const result = streamText({
+		model: MODEL_MAP[model],
+		prompt: "hello",
+		providerOptions: getProviderOptions(model),
+	});
+	await result.consumeStream();
+
+	expect(bodies[0]).toMatchObject({
+		model: "meta/muse-wonder",
+	});
+	expect(bodies[0]).not.toHaveProperty("service_tier");
+	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
+});
+
+test("kimi k3 asks for high, not maximum, reasoning effort and omits service_tier", async () => {
 	const model = "nanogpt|moonshotai/kimi-k3";
 	expect(MODEL_REASONING_EFFORT[model]).toBe("high");
+	expect(MODEL_SERVICE_TIER[model]).toBeUndefined();
 
 	const bodies: unknown[] = [];
 	stubStreamingFetch(bodies);
@@ -67,13 +74,13 @@ test("kimi k3 asks for high, not maximum, reasoning effort", async () => {
 		model: MODEL_MAP[model],
 		prompt: "hello",
 		reasoning: MODEL_REASONING_EFFORT[model],
-		providerOptions: { nanoGpt: { service_tier: NANO_GPT_SERVICE_TIER } },
+		providerOptions: getProviderOptions(model),
 	});
 	await result.consumeStream();
 
 	expect(bodies[0]).toMatchObject({
 		model: "moonshotai/kimi-k3",
-		service_tier: "flex",
 		reasoning_effort: "high",
 	});
+	expect(bodies[0]).not.toHaveProperty("service_tier");
 });
