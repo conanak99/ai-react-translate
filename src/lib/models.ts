@@ -2,6 +2,7 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { createDeepSeek } from "@ai-sdk/deepseek";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import type { streamText } from "ai";
 
 // Subset of the AI SDK's `reasoning` call setting. Providers translate it into
 // their own knob; Nano GPT sends it as `reasoning_effort`.
@@ -18,16 +19,19 @@ function nanoGptModel<const TSubmodel extends string>({
 	submodel,
 	label,
 	reasoningEffort,
+	serviceTier,
 }: {
 	submodel: TSubmodel;
 	label: string;
 	reasoningEffort?: ReasoningEffort;
+	serviceTier?: NanoGptServiceTier;
 }) {
 	return {
 		submodel,
 		modelType: `nanogpt|${submodel}` as `nanogpt|${TSubmodel}`,
 		label,
 		reasoningEffort,
+		serviceTier,
 	};
 }
 
@@ -51,6 +55,7 @@ export const NANO_GPT_MODELS = {
 	geminiFlash: nanoGptModel({
 		submodel: "google/gemini-3.8-flash",
 		label: "Gemini 3.8 Flash",
+		serviceTier: "flex",
 	}),
 	kimi: nanoGptModel({
 		submodel: "moonshotai/kimi-k3",
@@ -154,3 +159,54 @@ export const MODEL_REASONING_EFFORT: Partial<
 		.filter((model) => model.reasoningEffort != null)
 		.map(({ modelType, reasoningEffort }) => [modelType, reasoningEffort]),
 );
+
+export const MODEL_SERVICE_TIER: Partial<
+	Record<ModelType, NanoGptServiceTier>
+> = Object.fromEntries(
+	Object.values(NANO_GPT_MODELS)
+		.filter((model) => model.serviceTier != null)
+		.map(({ modelType, serviceTier }) => [modelType, serviceTier]),
+);
+
+export type ProviderOptions = NonNullable<
+	Parameters<typeof streamText>[0]["providerOptions"]
+>;
+
+export function getProviderOptions(
+	model: ModelType,
+): ProviderOptions | undefined {
+	if (model === "google" || model === "google_flash") {
+		return {
+			google: {
+				safetySettings: [
+					{ category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+					{
+						category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+						threshold: "BLOCK_NONE",
+					},
+					{ category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+					{
+						category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+						threshold: "BLOCK_NONE",
+					},
+					{
+						category: "HARM_CATEGORY_CIVIC_INTEGRITY",
+						threshold: "BLOCK_NONE",
+					},
+				],
+			},
+		};
+	}
+
+	if (isNanoGptModel(model)) {
+		const serviceTier = MODEL_SERVICE_TIER[model];
+		if (serviceTier) {
+			// Unknown keys are forwarded as-is to the chat completion body, which is
+			// how Nano GPT expects the service tier to be requested.
+			return { nanoGpt: { service_tier: serviceTier } };
+		}
+		return undefined;
+	}
+
+	return undefined;
+}
