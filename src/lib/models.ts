@@ -63,9 +63,9 @@ export const NANO_GPT_MODELS = {
 		submodel: "qwen3.8-max:thinking",
 		label: "Qwen 3.8 Max Thinking",
 	}),
-	museSpark: nanoGptModel({
-		submodel: "meta/muse-spark-1.3-contributor",
-		label: "Muse Spark 1.3",
+	museWonder: nanoGptModel({
+		submodel: "meta/muse-wonder",
+		label: "Muse Wonder",
 	}),
 	// Disabled: safety filters reject the chapters we send, so every request
 	// fails with "Your prompt was blocked by safety filters."
