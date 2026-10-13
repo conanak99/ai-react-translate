@@ -62,6 +62,29 @@ test("muse wonder model does not send service_tier parameter", async () => {
 	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
 });
 
+test("gemini argon model is registered and omits service_tier", async () => {
+	const model = "nanogpt|google/gemini-4-argon";
+	expect(MODEL_MAP[model]).toBeDefined();
+	expect(MODEL_SERVICE_TIER[model]).toBeUndefined();
+	expect(getProviderOptions(model)).toBeUndefined();
+
+	const bodies: unknown[] = [];
+	stubStreamingFetch(bodies);
+
+	const result = streamText({
+		model: MODEL_MAP[model],
+		prompt: "hello",
+		providerOptions: getProviderOptions(model),
+	});
+	await result.consumeStream();
+
+	expect(bodies[0]).toMatchObject({
+		model: "google/gemini-4-argon",
+	});
+	expect(bodies[0]).not.toHaveProperty("service_tier");
+	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
+});
+
 test("kimi k3 asks for high, not maximum, reasoning effort and omits service_tier", async () => {
 	const model = "nanogpt|moonshotai/kimi-k3";
 	expect(MODEL_REASONING_EFFORT[model]).toBe("high");
