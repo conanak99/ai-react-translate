@@ -35,6 +35,27 @@ test("nano gpt requests are sent with the configured service tier", async () => 
 	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
 });
 
+test("muse wonder model is registered in MODEL_MAP", async () => {
+	const model = "nanogpt|meta/muse-wonder";
+	expect(MODEL_MAP[model]).toBeDefined();
+
+	const bodies: unknown[] = [];
+	stubStreamingFetch(bodies);
+
+	const result = streamText({
+		model: MODEL_MAP[model],
+		prompt: "hello",
+		providerOptions: { nanoGpt: { service_tier: NANO_GPT_SERVICE_TIER } },
+	});
+	await result.consumeStream();
+
+	expect(bodies[0]).toMatchObject({
+		model: "meta/muse-wonder",
+		service_tier: "flex",
+	});
+	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
+});
+
 test("kimi k3 asks for high, not maximum, reasoning effort", async () => {
 	const model = "nanogpt|moonshotai/kimi-k3";
 	expect(MODEL_REASONING_EFFORT[model]).toBe("high");
