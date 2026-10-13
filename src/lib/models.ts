@@ -72,6 +72,10 @@ export const NANO_GPT_MODELS = {
 		submodel: "meta/muse-wonder",
 		label: "Muse Wonder",
 	}),
+	geminiArgon: nanoGptModel({
+		submodel: "google/gemini-4-argon",
+		label: "Gemini 4 Argon",
+	}),
 	// Disabled: safety filters reject the chapters we send, so every request
 	// fails with "Your prompt was blocked by safety filters."
 	// gptSol: nanoGptModel({
