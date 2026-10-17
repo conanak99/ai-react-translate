@@ -43,50 +43,19 @@ export type NanoGptServiceTier = "auto" | "default" | "flex" | "priority";
 export const NANO_GPT_SERVICE_TIER: NanoGptServiceTier = "flex";
 
 export const NANO_GPT_MODELS = {
-	// Disabled: output quality was too low for translation use.
-	// mimoThinking: nanoGptModel({
-	// 	submodel: "xiaomi/mimo-v2.5-pro:thinking",
-	// 	label: "Mimo V2.5 Pro",
-	// }),
-	glm: nanoGptModel({
-		submodel: "zai-org/glm-5.2",
-		label: "GLM 5.2",
-	}),
 	geminiFlash: nanoGptModel({
 		submodel: "google/gemini-3.8-flash",
 		label: "Gemini 3.8 Flash",
 		serviceTier: "flex",
 	}),
-	kimi: nanoGptModel({
-		submodel: "moonshotai/kimi-k3",
-		label: "Kimi K3",
-		// "xhigh" is the maximum depth and burns far more reasoning tokens than a
-		// chapter translation needs.
-		reasoningEffort: "high",
-	}),
 	qwenMaxThinking: nanoGptModel({
 		submodel: "qwen3.8-max:thinking",
 		label: "Qwen 3.8 Max Thinking",
-	}),
-	museWonder: nanoGptModel({
-		submodel: "meta/muse-wonder",
-		label: "Muse Wonder",
 	}),
 	geminiArgon: nanoGptModel({
 		submodel: "google/gemini-4-argon",
 		label: "Gemini 4 Argon",
 	}),
-	// Disabled: safety filters reject the chapters we send, so every request
-	// fails with "Your prompt was blocked by safety filters."
-	// gptSol: nanoGptModel({
-	// 	submodel: "openai/gpt-5.6-sol",
-	// 	label: "GPT 5.6 Sol",
-	// }),
-	// Disabled: output quality was too low for translation use.
-	// grok: nanoGptModel({
-	// 	submodel: "x-ai/grok-4.5",
-	// 	label: "Grok 4.5",
-	// }),
 } as const;
 
 export type NanoGptModel =
@@ -94,10 +63,10 @@ export type NanoGptModel =
 export type NanoGptModelType = NanoGptModel["modelType"];
 
 export type ModelType =
-	| "google"
 	| "google_flash"
 	| "anthropic"
 	| "deepseek"
+	| "deepseek_flash"
 	| NanoGptModelType;
 
 export type ScraperProvider = "jina" | "firecrawl";
@@ -124,10 +93,7 @@ const nanoGptOpenAICompatible = createOpenAICompatible({
 	baseURL: "https://nano-gpt.com/api/v1",
 });
 
-export const anthropicModel = anthropic("claude-opus-5");
-
-// export const googleModel = google("gemini-2.5-pro");
-export const googleModel = google("gemini-3.1-pro-preview");
+export const anthropicModel = anthropic("claude-opus-5-5");
 
 export const googleFlashModel = google("gemini-3.8-flash");
 
@@ -142,18 +108,21 @@ const nanoGptModelMap = Object.fromEntries(
 // current recommended production model.
 export const deepseekModel = deepseek("deepseek-v4-pro");
 
+export const deepseekFlashModel = deepseek("deepseek-flash");
+
 // Model map
 export const MODEL_MAP = {
-	google: googleModel,
 	google_flash: googleFlashModel,
 	anthropic: anthropicModel,
 	deepseek: deepseekModel,
+	deepseek_flash: deepseekFlashModel,
 	...nanoGptModelMap,
 } as const;
 
 export const MODEL_MAX_TOKENS: Partial<Record<ModelType, number>> = {
 	anthropic: 128000,
 	deepseek: 48000,
+	deepseek_flash: 48000,
 };
 
 export const MODEL_REASONING_EFFORT: Partial<
@@ -179,7 +148,7 @@ export type ProviderOptions = NonNullable<
 export function getProviderOptions(
 	model: ModelType,
 ): ProviderOptions | undefined {
-	if (model === "google" || model === "google_flash") {
+	if (model === "google_flash") {
 		return {
 			google: {
 				safetySettings: [

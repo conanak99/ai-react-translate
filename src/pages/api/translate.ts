@@ -42,7 +42,7 @@ function getCacheKey(
 async function getStreamResultFromSource(
 	source: string,
 	mode: Mode,
-	model: ModelType = "google",
+	model: ModelType = "google_flash",
 ): Promise<Result> {
 	const PROMPT_MAP = await getPromptMap();
 
@@ -71,7 +71,7 @@ ${source}
 async function getStreamResult(
 	url: string,
 	mode: Mode,
-	model: ModelType = "google",
+	model: ModelType = "google_flash",
 	scraperProvider: ScraperProvider = "jina",
 ): Promise<Result> {
 	const html = await crawl(url, scraperProvider);
@@ -81,7 +81,7 @@ async function getStreamResult(
 async function getContinuationStreamResult(
 	url: string,
 	mode: Mode,
-	model: ModelType = "google",
+	model: ModelType = "google_flash",
 	scraperProvider: ScraperProvider = "jina",
 	continueFrom: string,
 	directTranslate = false,
@@ -125,7 +125,7 @@ async function getStreamFromCache(
 	url: string,
 	mode: Mode,
 	ignoreCache: boolean,
-	model: ModelType = "google",
+	model: ModelType = "google_flash",
 	scraperProvider: ScraperProvider = "jina",
 ): Promise<Result> {
 	const cacheKey = getCacheKey(url, mode, model, scraperProvider);
@@ -183,7 +183,7 @@ export const POST: APIRoute = async ({ request }) => {
 		prompt,
 		ignoreCache,
 		mode = "wuxia",
-		model = "google",
+		model = "google_flash",
 		scraperProvider = "jina",
 		continueFrom,
 		directTranslate = false,

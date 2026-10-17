@@ -4,8 +4,9 @@ import { expect, test, vi } from "vitest";
 import {
 	getProviderOptions,
 	MODEL_MAP,
-	MODEL_REASONING_EFFORT,
+	MODEL_MAX_TOKENS,
 	MODEL_SERVICE_TIER,
+	NANO_GPT_MODELS,
 } from "./models";
 
 function stubStreamingFetch(bodies: unknown[]) {
@@ -17,6 +18,16 @@ function stubStreamingFetch(bodies: unknown[]) {
 		);
 	});
 }
+
+test("nano gpt models only include gemini 3.8 flash, qwen 3.8 max thinking, and gemini 4 argon", () => {
+	expect(Object.values(NANO_GPT_MODELS).map((model) => model.submodel)).toEqual(
+		[
+			"google/gemini-3.8-flash",
+			"qwen3.8-max:thinking",
+			"google/gemini-4-argon",
+		],
+	);
+});
 
 test("nano gpt requests with service tier configure provider options", async () => {
 	const model = "nanogpt|google/gemini-3.8-flash";
@@ -39,8 +50,8 @@ test("nano gpt requests with service tier configure provider options", async () 
 	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
 });
 
-test("muse wonder model does not send service_tier parameter", async () => {
-	const model = "nanogpt|meta/muse-wonder";
+test("qwen 3.8 max thinking model is registered and omits service_tier", async () => {
+	const model = "nanogpt|qwen3.8-max:thinking";
 	expect(MODEL_MAP[model]).toBeDefined();
 	expect(MODEL_SERVICE_TIER[model]).toBeUndefined();
 	expect(getProviderOptions(model)).toBeUndefined();
@@ -56,7 +67,7 @@ test("muse wonder model does not send service_tier parameter", async () => {
 	await result.consumeStream();
 
 	expect(bodies[0]).toMatchObject({
-		model: "meta/muse-wonder",
+		model: "qwen3.8-max:thinking",
 	});
 	expect(bodies[0]).not.toHaveProperty("service_tier");
 	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
@@ -85,25 +96,13 @@ test("gemini argon model is registered and omits service_tier", async () => {
 	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
 });
 
-test("kimi k3 asks for high, not maximum, reasoning effort and omits service_tier", async () => {
-	const model = "nanogpt|moonshotai/kimi-k3";
-	expect(MODEL_REASONING_EFFORT[model]).toBe("high");
-	expect(MODEL_SERVICE_TIER[model]).toBeUndefined();
+test("direct models configure expected model ids and token limits", () => {
+	expect(MODEL_MAP.google_flash.modelId).toBe("gemini-3.8-flash");
+	expect(MODEL_MAP.deepseek.modelId).toBe("deepseek-v4-pro");
+	expect(MODEL_MAP.deepseek_flash.modelId).toBe("deepseek-flash");
+	expect(MODEL_MAP.anthropic.modelId).toBe("claude-opus-5-5");
 
-	const bodies: unknown[] = [];
-	stubStreamingFetch(bodies);
-
-	const result = streamText({
-		model: MODEL_MAP[model],
-		prompt: "hello",
-		reasoning: MODEL_REASONING_EFFORT[model],
-		providerOptions: getProviderOptions(model),
-	});
-	await result.consumeStream();
-
-	expect(bodies[0]).toMatchObject({
-		model: "moonshotai/kimi-k3",
-		reasoning_effort: "high",
-	});
-	expect(bodies[0]).not.toHaveProperty("service_tier");
+	expect(MODEL_MAX_TOKENS.anthropic).toBe(128000);
+	expect(MODEL_MAX_TOKENS.deepseek).toBe(48000);
+	expect(MODEL_MAX_TOKENS.deepseek_flash).toBe(48000);
 });

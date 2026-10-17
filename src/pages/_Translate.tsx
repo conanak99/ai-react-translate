@@ -17,7 +17,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 	const [fontSize, setFontSize] = useLocalStorage("fontSize", 3);
 	const [isDarkMode, setIsDarkMode] = useLocalStorage("darkMode", false);
 	const [mode, setMode] = useLocalStorage<Mode>("mode", "light_novel");
-	const [model, setModel] = useLocalStorage<ModelType>("model", "google");
+	const [model, setModel] = useLocalStorage<ModelType>("model", "google_flash");
 	const [scraperProvider, setScraperProvider] =
 		useLocalStorage<ScraperProvider>("scraperProvider", "jina");
 	const [ignoreCache, setIgnoreCache] = useState(false);
@@ -328,23 +328,6 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									<div className="flex items-center gap-2">
 										<input
 											type="radio"
-											id="google_model"
-											name="model"
-											value="google"
-											checked={model === "google"}
-											onChange={(e) => setModel(e.target.value as ModelType)}
-											className="scale-125"
-										/>
-										<label
-											htmlFor="google_model"
-											className="text-gray-700 dark:text-gray-300"
-										>
-											Gemini 3.1 Pro
-										</label>
-									</div>
-									<div className="flex items-center gap-2">
-										<input
-											type="radio"
 											id="google_flash_model"
 											name="model"
 											value="google_flash"
@@ -379,6 +362,23 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 									<div className="flex items-center gap-2">
 										<input
 											type="radio"
+											id="deepseek_flash_model"
+											name="model"
+											value="deepseek_flash"
+											checked={model === "deepseek_flash"}
+											onChange={(e) => setModel(e.target.value as ModelType)}
+											className="scale-125"
+										/>
+										<label
+											htmlFor="deepseek_flash_model"
+											className="text-gray-700 dark:text-gray-300"
+										>
+											Deepseek 4.1 Flash
+										</label>
+									</div>
+									<div className="flex items-center gap-2">
+										<input
+											type="radio"
 											id="anthropic_model"
 											name="model"
 											value="anthropic"
@@ -390,7 +390,7 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 											htmlFor="anthropic_model"
 											className="text-gray-700 dark:text-gray-300"
 										>
-											Claude Opus 5
+											Claude Opus 5.5
 										</label>
 									</div>
 								</div>
