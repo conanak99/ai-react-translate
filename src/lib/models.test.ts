@@ -19,19 +19,21 @@ function stubStreamingFetch(bodies: unknown[]) {
 	});
 }
 
-test("nano gpt models only include gemini 3.8 flash, qwen 3.8 max thinking, and gemini 4 argon", () => {
+test("nano gpt models only include gemini 4 hydrogen, qwen 3.8 max thinking, and gemini 4 argon", () => {
 	expect(Object.values(NANO_GPT_MODELS).map((model) => model.submodel)).toEqual(
 		[
-			"google/gemini-3.8-flash",
+			"google/gemini-4-hydrogen",
 			"qwen3.8-max:thinking",
 			"google/gemini-4-argon",
 		],
 	);
 });
 
-test("nano gpt requests with service tier configure provider options", async () => {
-	const model = "nanogpt|google/gemini-3.8-flash";
-	expect(MODEL_SERVICE_TIER[model]).toBe("flex");
+test("gemini hydrogen model is registered and omits service_tier", async () => {
+	const model = "nanogpt|google/gemini-4-hydrogen";
+	expect(MODEL_MAP[model]).toBeDefined();
+	expect(MODEL_SERVICE_TIER[model]).toBeUndefined();
+	expect(getProviderOptions(model)).toBeUndefined();
 
 	const bodies: unknown[] = [];
 	stubStreamingFetch(bodies);
@@ -44,9 +46,9 @@ test("nano gpt requests with service tier configure provider options", async () 
 	await result.consumeStream();
 
 	expect(bodies[0]).toMatchObject({
-		model: "google/gemini-3.8-flash",
-		service_tier: "flex",
+		model: "google/gemini-4-hydrogen",
 	});
+	expect(bodies[0]).not.toHaveProperty("service_tier");
 	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
 });
 
