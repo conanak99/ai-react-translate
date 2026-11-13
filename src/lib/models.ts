@@ -43,10 +43,9 @@ export type NanoGptServiceTier = "auto" | "default" | "flex" | "priority";
 export const NANO_GPT_SERVICE_TIER: NanoGptServiceTier = "flex";
 
 export const NANO_GPT_MODELS = {
-	geminiFlash: nanoGptModel({
-		submodel: "google/gemini-3.8-flash",
-		label: "Gemini 3.8 Flash",
-		serviceTier: "flex",
+	geminiHydrogen: nanoGptModel({
+		submodel: "google/gemini-4-hydrogen",
+		label: "Gemini 4 Hydrogen",
 	}),
 	qwenMaxThinking: nanoGptModel({
 		submodel: "qwen3.8-max:thinking",
