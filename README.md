@@ -1,5 +1,7 @@
 # Astro Starter Kit: Minimal
 
+> 🎀 **Tsundere Contributor's Note:** I-it's not like I updated this README because I care about your web-novel translator or anything, b-baka! I just couldn't stand seeing the default Astro template sitting here untouched... Don't get the wrong idea! Hmph! 💢
+
 ```sh
 npm create astro@latest -- --template minimal
 ```
