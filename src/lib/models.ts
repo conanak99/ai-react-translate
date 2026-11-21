@@ -51,6 +51,10 @@ export const NANO_GPT_MODELS = {
 		submodel: "qwen3.8-max:thinking",
 		label: "Qwen 3.8 Max Thinking",
 	}),
+	geminiNeon: nanoGptModel({
+		submodel: "google/gemini-4-neon",
+		label: "Gemini 4 Neon",
+	}),
 	geminiArgon: nanoGptModel({
 		submodel: "google/gemini-4-argon",
 		label: "Gemini 4 Argon",

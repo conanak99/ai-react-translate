@@ -19,11 +19,12 @@ function stubStreamingFetch(bodies: unknown[]) {
 	});
 }
 
-test("nano gpt models only include gemini 4 hydrogen, qwen 3.8 max thinking, and gemini 4 argon", () => {
+test("nano gpt models only include gemini 4 hydrogen, qwen 3.8 max thinking, gemini 4 neon, and gemini 4 argon", () => {
 	expect(Object.values(NANO_GPT_MODELS).map((model) => model.submodel)).toEqual(
 		[
 			"google/gemini-4-hydrogen",
 			"qwen3.8-max:thinking",
+			"google/gemini-4-neon",
 			"google/gemini-4-argon",
 		],
 	);
@@ -70,6 +71,29 @@ test("qwen 3.8 max thinking model is registered and omits service_tier", async (
 
 	expect(bodies[0]).toMatchObject({
 		model: "qwen3.8-max:thinking",
+	});
+	expect(bodies[0]).not.toHaveProperty("service_tier");
+	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
+});
+
+test("gemini neon model is registered and omits service_tier", async () => {
+	const model = "nanogpt|google/gemini-4-neon";
+	expect(MODEL_MAP[model]).toBeDefined();
+	expect(MODEL_SERVICE_TIER[model]).toBeUndefined();
+	expect(getProviderOptions(model)).toBeUndefined();
+
+	const bodies: unknown[] = [];
+	stubStreamingFetch(bodies);
+
+	const result = streamText({
+		model: MODEL_MAP[model],
+		prompt: "hello",
+		providerOptions: getProviderOptions(model),
+	});
+	await result.consumeStream();
+
+	expect(bodies[0]).toMatchObject({
+		model: "google/gemini-4-neon",
 	});
 	expect(bodies[0]).not.toHaveProperty("service_tier");
 	expect(bodies[0]).not.toHaveProperty("reasoning_effort");
