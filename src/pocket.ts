@@ -1,12 +1,13 @@
 import PocketBase from "pocketbase";
 
-const API_URL = "https://pocketbase.codedao.cc";
 const COLLECTION_NAME = "key_values";
+const LINKS_COLLECTION = "links";
 
 const KEY = "ai_translate_url";
 const NAMES_KEY = "names";
 
-const pb = new PocketBase(API_URL);
+const POCKETBASE_URL = import.meta.env.POCKETBASE_URL;
+const pb = POCKETBASE_URL ? new PocketBase(POCKETBASE_URL) : null;
 
 export type NameEntry = {
 	key: string;
@@ -33,16 +34,39 @@ export interface Link {
 	updated: string;
 	link: string;
 }
-async function getKeyValue(key: string) {
-	const record = await pb
+
+// Used when POCKETBASE_URL is not set; data is lost when the server restarts.
+const memoryStore = {
+	translateUrl: "",
+	names: [] as NameEntry[],
+	links: [] as Link[],
+};
+
+async function getKeyValue(client: PocketBase, key: string) {
+	const record = await client
 		.collection<KeyValue>(COLLECTION_NAME)
 		.getFirstListItem(`key="${key}"`);
 	return record;
 }
 
 export async function getTranslateUrl() {
-	const record = await getKeyValue(KEY);
+	if (!pb) return memoryStore.translateUrl;
+
+	const record = await getKeyValue(pb, KEY);
 	return record.value;
+}
+
+export async function setTranslateUrl(url: string) {
+	if (!pb) {
+		memoryStore.translateUrl = url;
+		return url;
+	}
+
+	const record = await getKeyValue(pb, KEY);
+	const updatedRecord = await pb
+		.collection<KeyValue>(COLLECTION_NAME)
+		.update(record.id, { value: url });
+	return updatedRecord.value;
 }
 
 export async function getNames(): Promise<Record<string, string>> {
@@ -56,12 +80,19 @@ export async function getNames(): Promise<Record<string, string>> {
 }
 
 export async function getStoredNames(): Promise<NameEntry[]> {
-	const record = await getKeyValue(NAMES_KEY);
+	if (!pb) return memoryStore.names;
+
+	const record = await getKeyValue(pb, NAMES_KEY);
 	return record.json as NameEntry[];
 }
 
 async function updateStoredNames(names: NameEntry[]) {
-	const record = await getKeyValue(NAMES_KEY);
+	if (!pb) {
+		memoryStore.names = names;
+		return names;
+	}
+
+	const record = await getKeyValue(pb, NAMES_KEY);
 	const updatedRecord = await pb
 		.collection<KeyValue>(COLLECTION_NAME)
 		.update(record.id, { json: names });
@@ -104,17 +135,21 @@ export async function setNameEntryDisabled({
 	);
 }
 
-export async function setTranslateUrl(url: string) {
-	const record = await getKeyValue(KEY);
-	const updatedRecord = await pb
-		.collection<KeyValue>(COLLECTION_NAME)
-		.update(record.id, { value: url });
-	return updatedRecord;
-}
-
-const LINKS_COLLECTION = "links";
-
 export async function addLink(link: string) {
+	if (!pb) {
+		const now = new Date().toISOString();
+		const record: Link = {
+			id: crypto.randomUUID(),
+			collectionId: LINKS_COLLECTION,
+			collectionName: LINKS_COLLECTION,
+			created: now,
+			updated: now,
+			link,
+		};
+		memoryStore.links.unshift(record);
+		return record;
+	}
+
 	const record = await pb.collection<Link>(LINKS_COLLECTION).create({
 		link: link,
 	});
@@ -122,6 +157,8 @@ export async function addLink(link: string) {
 }
 
 export async function getLatestLinks() {
+	if (!pb) return memoryStore.links.slice(0, 1000);
+
 	const links = pb.collection<Link>(LINKS_COLLECTION);
 	const firstPage = await links.getList(1, 500, {
 		sort: "-created",
