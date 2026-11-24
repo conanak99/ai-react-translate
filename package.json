@@ -7,7 +7,7 @@
 	},
 	"scripts": {
 		"dev": "astro dev",
-		"start": "astro dev",
+		"start": "npm run build && astro preview --host",
 		"build": "astro check && astro build",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write --unsafe .",
