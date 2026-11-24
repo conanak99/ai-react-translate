@@ -29,7 +29,7 @@ An Astro (SSR) + React 19 web application for translating web novels (Wuxia/Xian
 - **Framework:** Astro (Node SSR adapter) + React 19 + TypeScript
 - **Styling & UI:** Tailwind CSS v4, Radix UI, Framer Motion, Lucide React
 - **AI:** Vercel AI SDK (`ai`, `@ai-sdk/google`, `@ai-sdk/anthropic`, `@ai-sdk/deepseek`, `@ai-sdk/openai-compatible`, `@ai-sdk/react`)
-- **Backend / Storage:** PocketBase (`https://pocketbase.codedao.cc`)
+- **Backend / Storage:** PocketBase (via `POCKETBASE_URL`), or an in-memory store when unset
 - **Tooling:** Biome (linting/formatting), Vitest (testing)
 
 ## 📋 Prerequisites
@@ -52,6 +52,9 @@ NANO_GPT_API_KEY=           # Required for Nano GPT models
 JINA_API_KEY=               # Optional: raises Jina Reader rate limits
 FIRECRAWL_API_KEY=          # Required only if using the Firecrawl scraper
 
+# Storage (optional): without it, names/history/last URL are kept in memory and lost on restart
+POCKETBASE_URL=
+
 # Server (optional)
 PORT=4321
 ```
@@ -71,6 +74,7 @@ npm run dev
 | Command | Action |
 | :--- | :--- |
 | `npm run dev` | Start local dev server at `localhost:4321` |
+| `npm start` | Build, then serve the production build on all network interfaces |
 | `npm run build` | Type-check (`astro check`) and build for production (`./dist/`) |
 | `npm run preview` | Preview the production build locally |
 | `npm run lint` | Run Biome lint & format checks |

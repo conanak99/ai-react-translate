@@ -1,3 +1,4 @@
+import { actions } from "astro:actions";
 import { useCompletion } from "@ai-sdk/react";
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
@@ -9,7 +10,6 @@ import {
 
 import type { Mode } from "@/lib/translation/constants";
 import { getNextChapterUrl, getPreviousChapterUrl } from "@/lib/utils";
-import { addLink, setTranslateUrl } from "../pocket";
 
 const NANO_GPT_MODEL_OPTIONS = Object.values(NANO_GPT_MODELS);
 
@@ -83,8 +83,8 @@ const Translate: React.FC<{ initialUrl: string }> = ({ initialUrl }) => {
 				? getNextChapterUrl(input)
 				: getPreviousChapterUrl(input);
 
-		setTranslateUrl(newUrl); // update the url in the pocketbase
-		addLink(input);
+		actions.setTranslateUrl({ url: newUrl });
+		actions.addLink({ link: input });
 
 		setInput(newUrl);
 		complete(newUrl, {

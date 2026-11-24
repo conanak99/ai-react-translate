@@ -8,6 +8,7 @@ interface ImportMetaEnv {
 	readonly GOOGLE_GENERATIVE_AI_KEY: string;
 	readonly JINA_API_KEY?: string;
 	readonly NANO_GPT_API_KEY: string;
+	readonly POCKETBASE_URL?: string;
 	// Add other env variables as needed
 }
 

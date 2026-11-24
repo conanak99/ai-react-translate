@@ -1,10 +1,12 @@
 import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import {
+	addLink,
 	addNameEntry,
 	deleteNameEntry,
 	getStoredNames,
 	setNameEntryDisabled,
+	setTranslateUrl,
 } from "@/pocket";
 
 const keySchema = z.string().trim().min(1, "Name key is required");
@@ -45,5 +47,17 @@ export const server = {
 			disabled: z.boolean(),
 		}),
 		handler: async (input) => setNameEntryDisabled(input),
+	}),
+	setTranslateUrl: defineAction({
+		input: z.object({
+			url: z.string(),
+		}),
+		handler: async ({ url }) => setTranslateUrl(url),
+	}),
+	addLink: defineAction({
+		input: z.object({
+			link: z.string(),
+		}),
+		handler: async ({ link }) => addLink(link),
 	}),
 };
