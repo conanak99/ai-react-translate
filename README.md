@@ -71,15 +71,15 @@ npm run dev
 
 ## 🧞 Available Scripts
 
-| Command | Action |
-| :--- | :--- |
-| `npm run dev` | Start local dev server at `localhost:4321` |
-| `npm start` | Build, then serve the production build on all network interfaces |
-| `npm run build` | Type-check (`astro check`) and build for production (`./dist/`) |
-| `npm run preview` | Preview the production build locally |
-| `npm run lint` | Run Biome lint & format checks |
-| `npm run lint:fix` | Auto-fix Biome lint & format issues |
-| `npm run test` | Run Vitest unit tests |
+| Command            | Action                                                           |
+| :----------------- | :--------------------------------------------------------------- |
+| `npm run dev`      | Start local dev server at `localhost:4321`                       |
+| `npm start`        | Build, then serve the production build on all network interfaces |
+| `npm run build`    | Type-check (`astro check`) and build for production (`./dist/`)  |
+| `npm run preview`  | Preview the production build locally                             |
+| `npm run lint`     | Run Biome lint & format checks                                   |
+| `npm run lint:fix` | Auto-fix Biome lint & format issues                              |
+| `npm run test`     | Run Vitest unit tests                                            |
 
 ## 📁 Project Structure
 
