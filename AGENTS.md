@@ -5,10 +5,12 @@
 This is a single Astro v6 (SSR) + React 19 app — an AI web-novel translator ("AI Convert Translator"). There is only one service to run. Node `>=24.0.0` is required (see `package.json` `engines`).
 
 Standard commands live in `package.json` scripts; use them directly:
+
 - Dev server: `npm run dev` (Astro dev on `http://localhost:4321`; override port with `PORT`).
 - Lint: `npm run lint` (Biome). Build: `npm run build` (`astro check && astro build`). Tests: `npm run test` (Vitest, runs once and exits in non-interactive shells).
 
 Non-obvious caveats:
+
 - **External dependencies, no local services.** There is no database, docker-compose, or local backend in this repo. The app talks to remote HTTP APIs at runtime.
 - **PocketBase is optional**, configured via `POCKETBASE_URL` in `.env` (read in `src/pocket.ts`). When unset, names, history links, and the last translate URL are kept in server memory and lost on restart. When set, the homepage (`src/pages/index.astro`) calls `getTranslateUrl()` during SSR, so if that host is unreachable the page render fails. Browser code must go through Astro actions (`src/actions/index.ts`), never import `src/pocket.ts` directly.
 - **Translation requires an LLM API key.** `POST /api/translate` scrapes the source chapter (default scraper is Jina at `https://r.jina.ai`, which works without a key) and then calls an LLM. The default model is Google Gemini, which needs `GOOGLE_GENERATIVE_AI_KEY`. Without an LLM key the whole pipeline runs (scraping succeeds) but the LLM step throws `AI_LoadAPIKeyError`. Set keys in a `.env` file at the repo root (env is read via `import.meta.env.*`).
